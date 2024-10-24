@@ -1,0 +1,75 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>〇〇〇塾</title>
+<link rel="stylesheet" type="text/css" href="../css/main.css">
+</head><body id="preview">
+<h1 class="code-line" data-line-start=0 data-line-end=1><a id="_0"></a>〇〇〇塾</h1>
+<br><br>
+<h2 class="code-line" data-line-start=2 data-line-end=3><a id="_2"></a>サービス内容</h2>
+<p class="has-line-data" data-line-start="3" data-line-end="4">個人教育形態での小学生・中学生・高校生への学習指導・進路指導</p>
+<h2 class="code-line" data-line-start=5 data-line-end=6><a id="_5"></a>価格表</h2>
+<p class="has-line-data" data-line-start="3" data-line-end="4">お月謝</p>
+お月謝⇒　プリコース　A･Bコース　¥6,600（税込）<br>
+維持費⇒　¥660（税込）<br>
+入会金⇒ 　¥5,500（税込）<br>
+<h2 class="code-line" data-line-start=8 data-line-end=9><a id="_8"></a>特定商取引法に基づく表記</h2>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>スクール名</td>
+<td>ユアネット塾</td>
+</tr>
+<tr>
+<td>販売者名</td>
+<td>勝又　直紀</td>
+</tr>
+<tr>
+<td>運営統括責任者</td>
+<td>勝又　直紀</td>
+</tr>
+<tr>
+<td>所在地</td>
+<td>〒410-0831 静岡県沼津市市場町12-10<br>
+〒410-0831 静岡県沼津市市場町12-xx
+</td>
+</tr>
+<tr>
+<td>電話番号</td>
+<td>055-934-8100</td>
+</tr>
+<tr>
+<td>メールアドレス</td>
+<td>info @ yournet-jp.com</td>
+</tr>
+<tr>
+<td>お支払い方法</td>
+<td>クレジットカード決済・口座振替</td>
+</tr>
+<tr>
+<td>商品代金以外の 必要金額</td>
+<td>教材費</td>
+</tr>
+<tr>
+<td>サービスの提供時期</td>
+<td>ご契約日以降で、お客様がご希望する日</td>
+</tr>
+<tr>
+<td>事業内容</td>
+<td>教育事業</td>
+</tr>
+<tr>
+<td>返品・キャンセルについて</td>
+<td>サービスの性質上、原則として返品・キャンセル等はいたしかねます
+</tr>
+<tr>
+<td>中途解約について</td>
+<td>退会希望月の前月最終営業日までにご申告頂いた場合、月末に退会となります</td>
+</tr>
+</tbody>
+</table>
+<br><br>
+</body></html>

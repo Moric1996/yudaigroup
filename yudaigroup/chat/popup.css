@@ -1,0 +1,84 @@
+.panel {
+    margin: 0;
+    background-color: #e8efff;
+}
+
+.panel-body {
+	height: auto;
+	overflow: auto;
+	min-height: 400px
+}
+.panel-title {
+  background: #273246;
+  padding: 5px;
+  text-align: center;
+  font-size: 100%;
+  color: #ffffff;
+}
+.chatBox {
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+}
+.dateline {
+	display: block;
+	width: 100px;
+	border-radius: 10px;
+	padding: 1px 5px;
+	background-color: #4979ee;
+	text-align: center;
+	color: #ffffff;
+	font-size: 70%;
+	margin-left: auto;
+	margin-right: auto;
+}
+.botname {
+	display: inline-block;
+	padding: 0px 10px;
+	float: left;
+	color: #444444;
+	font-size: 70%;
+	margin-bottom: -4px;
+}
+.chatBalloon {
+    display: inline-block;
+    border-radius: 10px;
+    padding: 5px;
+    margin: 5px;
+    background-color: white;
+	font-size: 90%;
+}
+
+.bot {
+	float: left;
+	display: inline-block;
+	max-width: 90%;
+}
+
+.usr {
+	float: right;
+	background-color: #cdf095;
+	max-width: 90%;
+}
+.usrdate {
+	display: inline-block;
+	margin: 5px 0px;
+	padding: 5px;
+	width: 30px;
+	float: right;
+	font-size: 60%;
+	color: #444444;
+}
+.botdate {
+	display: inline-block;
+	margin: 5px 0px;
+	padding: 5px;
+	width: 30px;
+	float: left;
+	font-size: 60%;
+	color: #444444;
+}
+
+.inputText {
+    text-align: right;
+}

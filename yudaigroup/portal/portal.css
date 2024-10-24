@@ -1,0 +1,430 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", YuGothic, Hiragino Kaku Gothic ProN, Arial, Meiryo, sans-serif;
+    ;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    color: #444;
+    font-size: 16px;
+    line-height: 1.25;
+    background-color: #EFEFEF;
+}
+
+a {
+    color: #444;
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
+
+::placeholder {
+    color: #999;
+}
+
+/* flex */
+.flex {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.justify_between {
+    -webkit-box-pack: justify;
+	-ms-flex-pack: justify;
+    justify-content: space-between;
+}
+
+.justify_center {
+    -webkit-box-pack: center;
+	-ms-flex-pack: center;
+    justify-content: center;
+}
+
+.items_center {
+    -webkit-box-align: center;
+	-ms-flex-align: center;
+    align-items: center;
+}
+
+.flex_wrap {
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.flex1 {
+    -webkit-box-flex:1;
+	-ms-flex-positive:1;
+    flex: 1;
+}
+
+/* font */
+.font_bold {
+    font-weight: bold;
+}
+
+/* font size */
+.subtitle {
+    font-size: 20px;
+}
+
+/* color */
+.color_red {
+    color: #ef1f1f;
+}
+
+.color_blue {
+    color: #0062ac;
+}
+
+.color_yudai {
+    color: #007278;
+}
+
+/* align */
+.text_left {
+    text-align: left;
+}
+
+.text_center {
+    text-align: center;
+}
+
+.text_right {
+    text-align: right;
+}
+
+/* header */
+.header {
+    color: #179298;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 58px;
+    background-color: #fff;
+}
+
+.header_title {
+    min-width: 240px;
+}
+
+.yd_logo {
+    display: block;
+    width: 58px;
+    height: 58px;
+    background-image: url('./img/youdai_logo.gif');
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: auto 40px;
+}
+
+.member_name {
+    padding: 0 16px;
+    min-width: 8em;
+    max-width: calc(100vw - 240px);
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 20px;
+}
+
+/* main */
+.subtitle {
+    position: relative;
+    padding-left: 20px;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 36px;
+    background: #179298;
+    background: linear-gradient(to left, #49b8bc, #179298);
+    overflow: hidden;
+}
+
+.menu_btn {
+    padding: 8px;
+}
+
+.menu_btn li {
+    position: relative;
+    margin: 8px 8px 12px;
+    flex-basis: auto;
+    max-width: 144px;
+    width: 42%;
+    width: 42vw;
+    height: 132px;
+    font-size: 14px;
+    text-align: center;
+    background-color: #fff;
+    background-position: 50% 48%;
+    background-repeat: no-repeat;
+    background-size: 128px auto;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 3px 0 #d2dadc, 1px 5px 4px #999;
+    box-shadow: 0 3px 0 #dadfe0, 1px 5px 4px #999;
+}
+
+.menu_btn li:active {
+    margin: 8px 8px 9px;
+    height: 135px;
+    background-position: 50% 50%;
+    -webkit-box-shadow: 0 1px 0 #d2dadc, 1px 3px 4px #999;
+    box-shadow: 0 1px 0 #dadfe0, 1px 3px 4px #999;
+    opacity: 0.6;
+}
+
+.menu_btn li.inactive {
+    margin: 8px 8px 9px;
+    height: 135px;
+    background-color: #fcfcfcbb;
+    background-blend-mode: screen;
+    background-position: 50% 50%;
+    -webkit-box-shadow: 0 1px 0 #d2dadc;
+    box-shadow: 0 1px 0 #d2dadc;
+    opacity: 1;
+}
+
+.menu_btn li.empty {
+    height: 0;
+    margin: 0 8px;
+}
+
+.menu_btn li a {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.menu_btn li p {
+    display: block;
+    position: absolute;
+    bottom: 8px;
+    margin: 0;
+    width: 100%;
+    color: #179298;
+    font-weight: bold;
+}
+
+.menu_btn li.inactive p {
+    color: #bbb;
+}
+
+.img_bino {
+    background-image: url('./img/bino_logo.png');
+}
+
+.img_ptcard {
+    background-image: url('./img/pointcard.png');
+}
+
+.img_reserve {
+    background-image: url('./img/reserve_logo.png');
+}
+
+.img_yumail {
+    background-image: url('./img/yumail_logo.png');
+}
+
+.img_funcrew {
+    background-image: url('./img/funcrew_logo.png');
+}
+
+.img_jmotto {
+    background-image: url('./img/jmotto_logo.png');
+}
+
+.img_tunag {
+    background-image: url('./img/tunag_logo.png');
+}
+
+.img_jinjer {
+    background-image: url('./img/jinjer_logo.png');
+}
+
+.img_infomart {
+    background-image: url('./img/infomart_logo.png');
+}
+
+.img_aplus {
+    background-image: url('./img/aplus_logo.png');
+}
+
+.icon_performance {
+    background-image: url('./img/icon_performance.png');
+}
+
+.icon_webform {
+    background-image: url('./img/icon_webform.png');
+}
+
+.icon_labor {
+    background-image: url('./img/icon_labor.png');
+}
+
+.icon_request {
+    background-image: url('./img/icon_request.png');
+}
+
+.icon_manual {
+    background-image: url('./img/icon_manual.png');
+}
+
+.icon_rules {
+    background-image: url('./img/icon_rules.png');
+}
+
+.icon_minutes {
+    background-image: url('./img/icon_minutes.png');
+}
+
+.icon_notice {
+    background-image: url('./img/icon_notice.png');
+}
+
+.icon_vision {
+    background-image: url('./img/icon_vision.png');
+}
+
+.icon_consult {
+    background-image: url('./img/icon_consult.png');
+}
+
+.icon_management {
+    background-image: url('./img/icon_management.png');
+}
+
+.icon_analysis {
+    background-image: url('./img/icon_analysis.png');
+}
+
+.icon_document {
+    background-image: url('./img/icon_document.png');
+}
+
+.icon_pdca {
+    background-image: url('./img/icon_pdca.png');
+}
+
+.icon_setting {
+    background-image: url('./img/icon_setting.png');
+}
+
+.icon_manage {
+    background-image: url('./img/icon_manage.png');
+}
+
+.icon_myaccount {
+    background-image: url('./img/icon_myaccount.png');
+}
+
+.icon_competition {
+    background-image: url('./img/icon_competition.png');
+}
+
+.icon_yrank {
+    background-image: url('./img/icon_y_rank.png');
+}
+
+.icon_order {
+    background-image: url('./img/icon_order.png');
+}
+
+.icon_internal {
+    background-image: url('./img/icon_internal.png');
+}
+
+.icon_yjudge {
+    background-image: url('./img/icon_y_judge.png');
+}
+
+.icon_weekly {
+    background-image: url('./img/icon_weeklyperform.png');
+}
+
+.icon_storecheck {
+    background-image: url('./img/icon_storecheck.png');
+}
+
+.icon_daily {
+    background-image: url('./img/icon_dailyperform.png');
+}
+
+.icon_camp {
+    background-image: url('./img/icon_campagn.png');
+}
+
+.icon_budget {
+    background-image: url('./img/icon_budget.png');
+}
+
+.icon_sharefile {
+    background-image: url('./img/icon_sharefile.png');
+}
+
+.icon_gmb {
+    background-image: url('./img/icon_gmb.png');
+}
+
+.icon_yapp {
+    background-image: url('./img/icon_yapp.png');
+}
+
+.icon_slip {
+    background-image: url('./img/icon_slip.png');
+}
+
+.icon_hotspring {
+    background-image: url('./img/icon_hotspring.png');
+}
+
+.icon_kpi {
+    background-image: url('./img/icon_kpi.png');
+}
+
+.icon_scan {
+    background-image: url('./img/icon_scan.png');
+}
+.icon_gacha {
+    background-image: url('./img/gacha.png');
+}
+.icon_schpasstokutei {
+    background-image: url('./img/schpasstoku.png');
+}
+
+.memo {
+    margin: auto;
+    margin-bottom: 16px;
+    padding: 8px;
+    min-width: 220px;
+    color: #5a5444;
+    font-size: 14px;
+    background-color: #fff8e4;
+    box-shadow: 1px 2px 2px #3333;
+}
+
+.unread_badge {
+    display: block;
+    position: absolute;
+    top: 5px;
+    right: -3px;
+    padding: 5px 7px;
+    min-width: 30px;
+    height: 30px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    text-align: center;
+    background-color: #d00;
+    -webkit-border-radius: 15px;
+    border-radius: 15px;
+    box-shadow: 1px 2px 2px #3333;
+}

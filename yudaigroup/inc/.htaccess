@@ -1,0 +1,6 @@
+SetEnvIf Referer "^https://yournet-jp\.com" ref_ok
+Order Deny,Allow
+<Files ~ "\.inc$">
+Deny from all
+</Files>
+Allow from env=ref_ok

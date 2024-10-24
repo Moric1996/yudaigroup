@@ -1,0 +1,4 @@
+AuthUserfile /usr/local/htdocs/ms/kanri/.htpasswd
+AuthName "Please enter your ID and password"
+AuthType Basic
+require valid-user

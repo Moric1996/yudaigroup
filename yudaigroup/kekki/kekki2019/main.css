@@ -1,0 +1,78 @@
+.pcver {
+   padding-left: 30vw;
+   padding-right: 30vw;
+}
+
+ul {
+   list-style-type: none;
+}
+
+h3 {
+  background: #eeeefe;
+}
+div.main {
+   font-size: x-large;
+   text-align : center;
+}
+
+div.head {
+   font-style: italic;
+   font-size: x-small;
+}
+div.center {
+   text-align : center;
+}
+div.kakunin {
+  background: #ffffff;
+  border: 1px #111111;
+  font-size: large;
+}
+div.chk {
+  margin-left: 40px;
+   color: #aa0000;
+}
+div.subitem {
+  background: #f3fbff;
+  border: 1px skyblue dashed;
+   padding: 5px;
+}
+.submit_btn{
+font-size: 20px;
+padding: 10px 30px;
+font-weight: bold;
+background-color: #567ac8;
+color: #FFF;
+box-shadow: 2px 2px 3px 1px #666;
+-moz-box-shadow: 2px 2px 3px 1px #666;
+-webkit-box-shadow: 2px 2px 3px 1px #666;
+text-shadow: 1px 1px 2px #000;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+border-radius: 3px;
+}
+
+.square_btn{
+font-size: 1.2em;
+display: inline-block;
+padding: 1em 3em;
+text-decoration: none;
+background: #668ad8;/*ボタン色*/ color: #FFF;
+border-bottom: solid 4px #627295;
+border-radius: 3px;
+}
+.square_btn:active {/*ボタンを押したとき*/ -ms-transform: translateY(4px);
+-webkit-transform: translateY(4px);
+transform: translateY(4px);/*下に動く*/ border-bottom: none;/*線を消す*/ } 
+
+.square_btn2{
+display: inline-block;
+padding: 0.2em 1em;
+text-decoration: none;
+background: #969ab8;/*ボタン色*/ color: #FFF;
+border-bottom: solid 4px #728295;
+border-radius: 3px;
+}
+
+.square_btn2:active {/*ボタンを押したとき*/ -ms-transform: translateY(4px);
+-webkit-transform: translateY(4px);
+transform: translateY(4px);/*下に動く*/ border-bottom: none;/*線を消す*/ } 

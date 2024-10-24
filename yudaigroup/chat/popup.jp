@@ -1,0 +1,44 @@
+function getBotSpeech() {
+　　　　　　　　// 入力したテキストを取得
+    var inputText = $('#txt').val();
+
+　　　　　　　　// 入力したテキストをチャット画面に表示
+    var messageMine = $("<div class='chatBox'><div class='usr chatBalloon'>" + esc(inputText) + "</div></div>");
+    $('#chat').append(messageMine);
+　　　　　　　　
+　　　　　　　　　// botの返答を取得＆表示
+    $.ajax({
+        // パラメータで文言を送信
+        url: "ここにbotの文言を取得するURLを入力?text=" + encodeURI(inputText),
+        type: "GET",
+        async: true,
+        cache: false
+    }).done(function(data) {
+　　　　　　　　　　　　　　　　// 返答をチャット画面に表示
+        var chat = $("<div class='chatBox'><div class='bot chatBalloon'>" + esc(data) + "</div></div>");
+        $('#chat').append(chat);
+    }).fail(function(data) {}).always(function(data) {});
+　　　　　　　　
+    //返答したらテキストボックスは空に
+    $('#txt').val('').focus();
+}
+
+function esc(s) {
+    return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;');
+}
+
+function clickHandler(e) {
+    getBotSpeech();
+}
+
+function textareaHandler(e) {
+    if (!(e.keyCode == 13 && e.shiftKey)) return;
+    getBotSpeech();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+　　　　// 送信ボタンをおしたとき
+    document.querySelector('.chat-btn').addEventListener('click', clickHandler);
+　　　　// Shift + Enterでも送信できるように
+    document.querySelector('#txt').addEventListener('keyup', textareaHandler);
+});

@@ -1,0 +1,154 @@
+th {
+    font-size: 8px;
+    vertical-align: middle !important;
+}
+
+td {
+    font-size: 10.5px;
+    text-align: right;
+    vertical-align: middle !important;
+}
+
+thead {
+    border: 1px solid #808080;
+}
+
+table td {
+    background: #fff;
+}
+
+thead th {
+    background: #fff1cb;
+    color: #000;
+    text-align: center;
+}
+
+tbody tr th {
+    background: #fff;
+    border: 1px solid #808080;
+}
+
+tbody tr.total td, tbody tr.total th {
+    background: #fff1cb;
+    border: 1px solid #808080;
+}
+
+tbody tr.total td.last, tbody tr.total th.last {
+    background: #eadcb8;
+}
+
+.last {
+    background: #ebebeb;
+}
+
+tbody th {
+    font-weight: bold;
+    text-align: center;
+}
+
+.table-bordered > thead > tr > th,
+.table-bordered > tbody > tr > th,
+.table-bordered > tfoot > tr > th,
+.table-bordered > thead > tr > td,
+.table-bordered > tbody > tr > td,
+.table-bordered > tfoot > tr > td {
+    border: 1px solid #808080;
+    border-top-color: rgb(244, 244, 244);
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+}
+
+
+#example1 thead th {
+    position: -webkit-sticky;
+    position: sticky;
+    white-space: nowrap;
+}
+
+#example1 thead tr:nth-child(1) th {
+    top: 0;
+    z-index: 3;
+}
+
+#example1 thead tr:nth-child(2) th {
+    top: 1.5rem;
+    z-index: 2;
+}
+
+#example1 th:first-child {
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+}
+
+#example1 thead th:first-child,
+#example1 thead th:nth-child(2) {
+    z-index: 1;
+}
+
+#example1 > thead > tr:nth-child(1) > th:nth-child(1) {
+    z-index: 0;
+}
+
+table * {
+    min-width: 70px;
+}
+
+.box-body {
+    overflow: scroll;
+    max-height: 400px;
+    padding: 0;
+}
+
+
+.table > tbody > tr > td,
+.table > tbody > tr > th,
+.table > thead > tr > th {
+    font-size: 11px;
+    padding: 8px 0 8px;
+    box-sizing: border-box;
+}
+
+.table > tbody > tr > td {
+    padding-right: 2px;
+}
+
+
+
+.bold {
+    font-weight: bold;
+}
+
+.division_line {
+    border-right: 2px black solid !important;
+}
+
+/* 対比 */
+/* 茶色線 */
+.brown_border {
+    border-left: 2px #783b26 solid !important;
+    border-right: 2px #783b26 solid !important;
+}
+#example1 > thead > tr:nth-child(2) > th.brown_border {
+    border-top: 5px #783b26 solid !important;
+}
+#example1 > thead > td.brown_border {
+    border-bottom: 2px #783b26 solid !important;
+}
+
+
+.left_border {
+    border-left: 5px #783b26 solid !important;
+}
+.top_border {
+    border-top: 5px #783b26 solid !important;
+}
+/*#example1 > thead > tr:last-child td.left_border,*/
+/*#example1 > thead > tr:last-child td.right_border {*/
+/*    border-bottom: 5px #783b26 solid !important;*/
+/*}*/
+.right_border {
+    border-right: 5px #783b26 solid !important;
+}
+

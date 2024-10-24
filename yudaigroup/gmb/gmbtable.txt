@@ -1,0 +1,202 @@
+OAuth2.0
+ユーザー毎のトークン取得
+ユーザー→Googleアカウント
+
+各ユーザーからアカウントリスト取得{$accountid}
+アカウントID{$accountid}→店舗毎のID
+
+
+
+ユーザー情報テーブル
+guserid
+googleID
+googleemail(Eメール)
+googlename(Eメール)
+トークン
+company_id
+トークン取得日
+トークン最終更新日
+状態
+create table gmb_guser (
+guserid int,
+googleID text,
+googleEmail text,
+googleName text,
+company_id int,
+token json,
+add_date timestamp,
+up_date timestamp,
+status char(1),
+UNIQUE(guserid)
+);
+create sequence gmb_guser_id_seq START 101;
+
+
+
+アカウント情報テーブル
+accountid
+accountName
+type
+company_id
+取得日
+更新日
+状態
+create table gmb_account (
+accountid text,
+accountName text,
+type text,
+company_id int,
+add_date timestamp,
+up_date timestamp,
+status char(1),
+UNIQUE(accountid,status)
+);
+
+
+ロケーション情報テーブル
+locationid
+placeId
+title
+storeCode
+languageCode
+websiteUri
+mapsUri
+newReviewUri
+company_id
+shop_id
+取得日
+更新日
+状態
+create table gmb_location (
+locationid text,
+company_id int,
+shop_id text,
+placeId text,
+title text,
+storeCode text,
+languageCode text,
+websiteUri text,
+mapsUri text,
+newReviewUri text,
+add_date timestamp,
+up_date timestamp,
+status char(1),
+UNIQUE(locationid,status)
+);
+
+CREATE INDEX gmb_location_shop_idx ON gmb_location (shop_id);
+
+
+relationテーブル
+guserid
+accountid
+locationid
+company_id
+取得日
+状態
+create table gmb_relation (
+relation_id int,
+guserid int,
+accountid text,
+locationid text,
+company_id int,
+add_date timestamp
+);
+create sequence gmb_relation_id_seq START 1;
+CREATE INDEX gmb_relation_locationid_idx ON gmb_relation (locationid);
+
+
+レビューテーブル
+reviewId
+company_id
+shop_id
+name
+reviewer
+profilePhotoUrl
+displayName
+isAnonymous
+starRating
+comment
+createTime
+updateTime
+Replycomment
+ReplyupdateTime
+取得日
+状態
+create table gmb_review (
+gmb_review_id int,
+reviewId text,
+company_id int,
+locationid text,
+name text,
+reviewer text,
+profilePhotoUrl text,
+displayName text,
+isAnonymous boolean,
+starRating int,
+comment text,
+createTime timestamp,
+updateTime timestamp,
+Replycomment text,
+ReplyupdateTime timestamp,
+add_date timestamp
+
+);
+create sequence gmb_review_id_seq START 1;
+CREATE INDEX gmb_review_locationid_idx ON gmb_review (locationid);
+
+
+starRatingテーブル
+company_id
+shop_id
+日付
+averageRating
+totalReviewCount
+計算方法
+グラフ表示フラグ
+取得日
+状態
+create table gmb_starRating (
+starRating_id int,
+company_id int,
+locationid text,
+t_date date,
+averageRating text,
+totalReviewCount int,
+add_date timestamp,
+status char(1),
+UNIQUE(starRating_id)
+);
+create sequence gmb_starRating_id_seq START 1;
+CREATE INDEX gmb_starRating_locationid_idx ON gmb_starRating (locationid);
+
+
+
+monthRatingテーブル
+company_id
+shop_id
+日付
+averageRating
+totalReviewCount
+計算方法
+グラフ表示フラグ
+取得日
+状態
+create table gmb_monthRating (
+monthRating_id int,
+company_id int,
+locationid text,
+t_month date,
+monthsumRating int,
+totalsumRating int,
+monthReviewCount int,
+totalReviewCount int,
+add_date timestamp,
+status char(1),
+UNIQUE(monthRating_id)
+);
+
+
+create sequence gmb_monthRating_id_seq START 1;
+CREATE INDEX gmb_monthRating_locationid_idx ON gmb_monthRating (locationid);
+
