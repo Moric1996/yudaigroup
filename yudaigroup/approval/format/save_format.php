@@ -156,26 +156,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // 削除対象のアイテムを処理
-        if (isset($_POST['delete_items']) && is_array($_POST['delete_items'])) {
-            foreach ($_POST['delete_items'] as $itemId) {
-                $queryDeleteItem = "UPDATE format_items 
-                                   SET is_deleted = 't' 
-                                   WHERE format_item_id = $1";
-                $resultDeleteItem = pg_query_params($conn, $queryDeleteItem, array($itemId));
+if (isset($_POST['delete_items']) && is_array($_POST['delete_items'])) {
+    $titleIdsToCheck = [];
+    foreach ($_POST['delete_items'] as $itemId) {
+        // アイテムの削除
+        $queryDeleteItem = "UPDATE format_items 
+                           SET is_deleted = 't' 
+                           WHERE format_item_id = $1";
+        $resultDeleteItem = pg_query_params($conn, $queryDeleteItem, array($itemId));
 
-                if (!$resultDeleteItem) {
-                    error_log("Item deletion error (item ID: $itemId): " . pg_last_error($conn));
+        if (!$resultDeleteItem) {
+            error_log("Item deletion error (item ID: $itemId): " . pg_last_error($conn));
+            pg_query($conn, "ROLLBACK");
+            echo "アイテムの削除に失敗しました。";
+            exit;
+        }
+
+        // 削除されたアイテムのタイトルIDを収集
+        $titleIdQuery = "SELECT title_id FROM format_items WHERE format_item_id = $1";
+        $titleIdResult = pg_query_params($conn, $titleIdQuery, array($itemId));
+        if ($titleIdResult) {
+            $titleIdRow = pg_fetch_assoc($titleIdResult);
+            $titleIdsToCheck[] = intval($titleIdRow['title_id']);
+            pg_free_result($titleIdResult);
+        }
+    }
+
+    // タイトルに関連するすべての小枠が削除されたかをチェック
+    foreach (array_unique($titleIdsToCheck) as $titleId) {
+        $itemCountQuery = "SELECT COUNT(*) AS item_count FROM format_items WHERE title_id = $1 AND is_deleted = 'f'";
+        $itemCountResult = pg_query_params($conn, $itemCountQuery, array($titleId));
+        if ($itemCountResult) {
+            $itemCountRow = pg_fetch_assoc($itemCountResult);
+            if (intval($itemCountRow['item_count']) === 0) {
+                // タイトルのis_deletedをtに設定
+                $queryDeleteTitle = "UPDATE format_item_titles 
+                                    SET is_deleted = 't' 
+                                    WHERE title_id = $1";
+                $resultDeleteTitle = pg_query_params($conn, $queryDeleteTitle, array($titleId));
+
+                if (!$resultDeleteTitle) {
+                    error_log("Title deletion error (title ID: $titleId): " . pg_last_error($conn));
                     pg_query($conn, "ROLLBACK");
-                    echo "アイテムの削除に失敗しました。";
+                    echo "タイトルの削除に失敗しました。";
                     exit;
                 }
             }
+            pg_free_result($itemCountResult);
         }
+    }
+}
 
         // トランザクションのコミット
         pg_query($conn, "COMMIT");
-        // データが正常に保存された場合のリダイレクト
-        echo "データが正常に保存されました。";
+        // データが正常に保存された場合、format_detail.phpにリダイレクト
+        header("Location: format_detail.php?format_id=$format_id&status=success");
         exit;
     } else {
         echo "カテゴリ名、フォーマット名、またはアイテムデータが不足しています。";
