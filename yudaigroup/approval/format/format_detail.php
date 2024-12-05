@@ -149,7 +149,7 @@ HTML;
                 <label class="form-label">タイトル名:</label>
                 <input type="text" name="titles[$currentTitleId][title_name]" value="$titleName" class="form-control" required>
                 <label class="form-label">表示順（大カテゴリ）:</label>
-                <input type="number" name="titles[$currentTitleId][display_order]" value="$titleDisplayOrder" class="form-control" required>
+                <input type="number" name="titles[$currentTitleId][display_order]" value="$titleDisplayOrder" class="form-control" required min="1">
             </h5>
 HTML;
         }
@@ -161,7 +161,7 @@ HTML;
                 <input type="text" name="items[$itemId][item_name]" value="$itemName" class="form-control" required>
                 <input type="hidden" name="items[$itemId][title_id]" value="$titleId">
                 <label class="form-label">表示順（小カテゴリ）:</label>
-                <input type="number" name="items[$itemId][display_order]" value="$itemDisplayOrder" class="form-control" required>
+                <input type="number" name="items[$itemId][display_order]" value="$itemDisplayOrder" class="form-control" required min="1">
             </div>
             <div class="mb-2">
                 <label class="form-label">属性:</label>
@@ -188,6 +188,15 @@ HTML;
     }
     $ybase->ST_PRI .= <<<HTML
             </div>
+        </div>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="h6 mb-0">新しいアイテムを追加</h4>
+        </div>
+        <div class="card-body">
+            <div id="new-items-container">
+            </div>
             <button type="button" class="btn btn-secondary" onclick="addNewItem()">アイテムを追加</button>
         </div>
     </div>
@@ -206,10 +215,13 @@ var formatValues = {$optionsJson};
 var itemCount = 1;
 
 function addNewItem() {
-    var container = document.getElementById("items-container");
-    var newItem = document.createElement("div");
-    newItem.className = "item-row mb-3 border p-3";
+    var container = document.getElementById("new-items-container");
+    var newItemCard = document.createElement("div");
+    newItemCard.className = "card mb-3";
     
+    var newItemCardBody = document.createElement("div");
+    newItemCardBody.className = "card-body";
+
     // 属性のオプションを生成
     var options = "";
     for (var i = 0; i < formatValues.length; i++) {
@@ -217,20 +229,19 @@ function addNewItem() {
         options += "<option value=\"" + value.format_value_id + "\">" + value.item_name + "</option>";
     }
     
-    newItem.innerHTML = 
+    newItemCardBody.innerHTML = 
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">タイトル名:</label>" +
             "<input type=\"text\" name=\"titles[new_" + itemCount + "][title_name]\" class=\"form-control\" required>" +
             "<label class=\"form-label\">表示順（大カテゴリ）:</label>" +
-            "<input type=\"number\" name=\"titles[new_" + itemCount + "][display_order]\" class=\"form-control\" required>" +
+            "<input type=\"number\" name=\"titles[new_" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">小枠:</label>" +
             "<input type=\"text\" name=\"items[new_" + itemCount + "][item_name]\" class=\"form-control\" required>" +
-            // 修正案2: 新規タイトル用の識別子を付ける
             "<input type=\"hidden\" name=\"items[new_" + itemCount + "][title_id]\" value=\"new_" + itemCount + "\">" +
             "<label class=\"form-label\">表示順（小カテゴリ）:</label>" +
-            "<input type=\"number\" name=\"items[new_" + itemCount + "][display_order]\" class=\"form-control\" required>" +
+            "<input type=\"number\" name=\"items[new_" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">属性:</label>" +
@@ -241,12 +252,14 @@ function addNewItem() {
         "</div>" +
         "<button type=\"button\" class=\"btn btn-danger\" onclick=\"removeItem(this)\">削除</button>";
     
-    container.appendChild(newItem);
+    newItemCard.appendChild(newItemCardBody);
+    container.appendChild(newItemCard);
     itemCount++;
 }
 
 function removeItem(button) {
     var itemRow = button.closest(".item-row");
+    var titleId = itemRow.querySelector("input[name^='items[']").value;
     // 削除マークを付与
     var hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
@@ -255,6 +268,13 @@ function removeItem(button) {
     itemRow.parentNode.appendChild(hiddenInput);
     // 画面から非表示に
     itemRow.style.display = 'none';
+
+    // タイトルIDも保持
+    var hiddenTitleInput = document.createElement('input');
+    hiddenTitleInput.type = 'hidden';
+    hiddenTitleInput.name = 'delete_titles[]';
+    hiddenTitleInput.value = titleId;
+    itemRow.parentNode.appendChild(hiddenTitleInput);
 }
 
 function checkCategoryInput() {
