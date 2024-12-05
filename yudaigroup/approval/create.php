@@ -96,8 +96,11 @@ HTML;
 if ($selectedFormatId) {
     $ybase->ST_PRI .= "<form method='POST' action='create.php' class='mb-4'>";
 
-    // 注意書きを表示
-    $ybase->ST_PRI .= getWarningMessage($selectedFormatId);
+    // 画面表示の場合
+    $warningMessage = getWarningMessageForDisplay($conn, $selectedFormatId);
+    if ($warningMessage) {
+        $ybase->ST_PRI .= "<div class='alert alert-warning' role='alert'>$warningMessage</div>";
+    }
 
     $currentTitle = '';  // 現在のタイトル名を保存する変数
 
