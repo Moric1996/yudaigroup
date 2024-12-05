@@ -11,6 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryName = isset($_POST['category_name']) ? $_POST['category_name'] : '';
     $categorySelect = isset($_POST['category_select']) ? intval($_POST['category_select']) : 0;
     $formatName = $_POST['format_name'];
+    $warningMessage = isset($_POST['warning_message']) ? $_POST['warning_message'] : '';
     $items = $_POST['items'];
 
     // トランザクション開始
@@ -41,6 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $formatId = pg_fetch_result($resultFormat, 0, 'format_id');
         pg_free_result($resultFormat);
+
+        // 警告メッセージの挿入
+        if ($warningMessage) {
+            $insertWarningQuery = "INSERT INTO format_warnings (format_id, warning_message, is_deleted, updated_at) 
+                                   VALUES ($1, $2, false, CURRENT_TIMESTAMP)";
+            $resultWarning = pg_query_params($conn, $insertWarningQuery, array($formatId, $warningMessage));
+            if (!$resultWarning) {
+                throw new Exception("Warning message insertion error: " . pg_last_error($conn));
+            }
+            pg_free_result($resultWarning);
+        }
 
         // アイテムを挿入
         foreach ($items as $item) {
