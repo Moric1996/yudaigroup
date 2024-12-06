@@ -1,6 +1,7 @@
 <?php
 
 include('../../inc/ybase.inc');
+include('../warnings.php'); // 注意書きファイルをインクルード
 
 $ybase = new ybase();
 $ybase->session_get();
@@ -24,7 +25,7 @@ if ($format_id === 0) {
 $queryFormat = "SELECT f.name, c.category_name 
                 FROM document_formats f
                 JOIN document_format_categories c ON f.category_id = c.category_id
-                WHERE f.format_id = $format_id AND f.deleted_at IS NULL AND c.deleted_at IS NULL";
+                WHERE f.format_id = $format_id AND f.is_deleted = 'f' AND c.is_deleted = 'f'";
 $resultFormat = pg_query($conn, $queryFormat);
 
 if (!$resultFormat || pg_num_rows($resultFormat) === 0) {
@@ -36,8 +37,11 @@ $format = pg_fetch_assoc($resultFormat);
 $formatName = htmlspecialchars($format['name'], ENT_QUOTES, 'UTF-8');
 $categoryName = htmlspecialchars($format['category_name'], ENT_QUOTES, 'UTF-8');
 
+// 警告メッセージを取得
+$warningMessage = getWarningMessage($conn, $format_id);
+
 // 既存のカテゴリを取得
-$queryCategories = "SELECT category_id, category_name FROM document_format_categories WHERE deleted_at IS NULL";
+$queryCategories = "SELECT category_id, category_name FROM document_format_categories WHERE is_deleted = 'f' ORDER BY category_name ASC";
 $resultCategories = pg_query($conn, $queryCategories);
 
 $categories = [];
@@ -100,6 +104,10 @@ $ybase->ST_PRI .= <<<HTML
                     </select>
                 </div>
                 <h3 class="h6">フォーマット名: <input type="text" name="format_name" value="$formatName" class="form-control" required></h3>
+                <div class="mb-3">
+                    <label for="warning_message" class="form-label">備考、注意書き等:</label>
+                    <textarea name="warning_message" id="warning_message" class="form-control" rows="4">$warningMessage</textarea>
+                </div>
             </div>
         </div>
 HTML;

@@ -62,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $titleName = $item['title_name'];
             $itemName = $item['item_name'];
             $formatValueId = $item['format_value_id'];
+            $displayOrder = isset($item['display_order']) ? intval($item['display_order']) : 0;
 
             // タイトルが既に存在するかチェック
             $queryCheckTitle = "SELECT title_id FROM format_item_titles WHERE format_id = $1 AND title_name = $2";
@@ -85,8 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             // アイテムを挿入
-            $queryItem = "INSERT INTO format_items (format_id, item_name, format_value_id, title_id) VALUES ($1, $2, $3, $4)";
-            $resultItem = pg_query_params($conn, $queryItem, array($formatId, $itemName, $formatValueId, $titleId));
+            $queryItem = "INSERT INTO format_items (format_id, item_name, format_value_id, title_id, display_order) VALUES ($1, $2, $3, $4, $5)";
+            $resultItem = pg_query_params($conn, $queryItem, array($formatId, $itemName, $formatValueId, $titleId, $displayOrder));
             if (!$resultItem) {
                 throw new Exception("Error in item insertion: " . pg_last_error($conn));
             }

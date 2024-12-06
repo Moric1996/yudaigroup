@@ -114,6 +114,10 @@ $ybase->ST_PRI .= <<<HTML
                             <input type="text" name="items[0][item_name]" class="form-control" required>
                         </div>
                         <div class="mb-2">
+                            <label class="form-label">表示順:</label>
+                            <input type="number" name="items[0][display_order]" class="form-control" required min="1">
+                        </div>
+                        <div class="mb-2">
                             <label class="form-label">属性:</label>
                             <select name="items[0][format_value_id]" class="form-control" required>
                                 <option value="">属性を選択してください</option>
@@ -159,6 +163,10 @@ function addNewItem() {
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">小枠:</label>" +
             "<input type=\"text\" name=\"items[" + itemCount + "][item_name]\" class=\"form-control\" required>" +
+        "</div>" +
+        "<div class=\"mb-2\">" +
+            "<label class=\"form-label\">表示順:</label>" +
+            "<input type=\"number\" name=\"items[" + itemCount + "][display_order]\" class=\"form-control\" required min="1">" +
         "</div>" +
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">属性:</label>" +
