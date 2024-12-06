@@ -1,5 +1,6 @@
 <?php
 include('../../inc/ybase.inc');
+include('../warnings.php'); // 注意書きファイルをインクルード
 
 $ybase = new ybase();
 $ybase->session_get();
@@ -30,7 +31,7 @@ while ($value = pg_fetch_assoc($resultValues)) {
 pg_free_result($resultValues);
 
 // 既存のカテゴリを取得
-$queryCategories = "SELECT category_id, category_name FROM document_format_categories WHERE deleted_at IS NULL";
+$queryCategories = "SELECT category_id, category_name FROM document_format_categories WHERE is_deleted = 'f' ORDER BY category_name ASC";
 $resultCategories = pg_query($conn, $queryCategories);
 
 $categories = [];
@@ -89,6 +90,10 @@ $ybase->ST_PRI .= <<<HTML
                 <div class="mb-3">
                     <label for="format_name" class="form-label">フォーマット名:</label>
                     <input type="text" name="format_name" id="format_name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="warning_message" class="form-label">備考、注意書き等あれば:</label>
+                    <textarea name="warning_message" id="warning_message" class="form-control" rows="4"></textarea>
                 </div>
             </div>
         </div>

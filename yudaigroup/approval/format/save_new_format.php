@@ -54,20 +54,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             pg_free_result($resultWarning);
         }
 
+        // タイトル名をキーにしてタイトルIDを管理する配列
+        $titleIds = [];
+
         // アイテムを挿入
         foreach ($items as $item) {
             $titleName = $item['title_name'];
             $itemName = $item['item_name'];
             $formatValueId = $item['format_value_id'];
 
-            // タイトルを挿入
-            $queryTitle = "INSERT INTO format_item_titles (format_id, title_name) VALUES ($1, $2) RETURNING title_id";
-            $resultTitle = pg_query_params($conn, $queryTitle, array($formatId, $titleName));
-            if (!$resultTitle) {
-                throw new Exception("Error in title insertion: " . pg_last_error($conn));
+            // タイトルが既に存在するかチェック
+            $queryCheckTitle = "SELECT title_id FROM format_item_titles WHERE format_id = $1 AND title_name = $2";
+            $resultCheckTitle = pg_query_params($conn, $queryCheckTitle, array($formatId, $titleName));
+            if (pg_num_rows($resultCheckTitle) > 0) {
+                // 既存のタイトルIDを使用
+                $titleId = pg_fetch_result($resultCheckTitle, 0, 'title_id');
+                pg_free_result($resultCheckTitle);
+            } else {
+                // 新しいタイトルを挿入
+                $queryTitle = "INSERT INTO format_item_titles (format_id, title_name) VALUES ($1, $2) RETURNING title_id";
+                $resultTitle = pg_query_params($conn, $queryTitle, array($formatId, $titleName));
+                if (!$resultTitle) {
+                    throw new Exception("Error in title insertion: " . pg_last_error($conn));
+                }
+                $titleId = pg_fetch_result($resultTitle, 0, 'title_id');
+                pg_free_result($resultTitle);
+
+                // タイトルIDを配列に保存
+                $titleIds[$titleName] = $titleId;
             }
-            $titleId = pg_fetch_result($resultTitle, 0, 'title_id');
-            pg_free_result($resultTitle);
 
             // アイテムを挿入
             $queryItem = "INSERT INTO format_items (format_id, item_name, format_value_id, title_id) VALUES ($1, $2, $3, $4)";
