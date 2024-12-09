@@ -114,7 +114,7 @@ $ybase->ST_PRI .= <<<HTML
                             <input type="text" name="items[0][item_name]" class="form-control" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">表示順:</label>
+                            <label class="form-label">表示順（小カテゴリ）:</label>
                             <input type="number" name="items[0][display_order]" class="form-control" required min="1">
                         </div>
                         <div class="mb-2">
@@ -165,8 +165,8 @@ function addNewItem() {
             "<input type=\"text\" name=\"items[" + itemCount + "][item_name]\" class=\"form-control\" required>" +
         "</div>" +
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">表示順:</label>" +
-            "<input type=\"number\" name=\"items[" + itemCount + "][display_order]\" class=\"form-control\" required min="1">" +
+            "<label class=\"form-label\">表示順（小カテゴリ）:</label>" +
+            "<input type=\"number\" name=\"items[" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">属性:</label>" +
@@ -215,6 +215,17 @@ function validateForm() {
     }
     return true;
 }
+
+// DOMContentLoadedイベントでイベントリスナーを設定
+document.addEventListener('DOMContentLoaded', function() {
+    var categoryName = document.getElementById("category_name");
+    var categorySelect = document.getElementById("category_select");
+    
+    if (categoryName && categorySelect) {
+        categoryName.addEventListener('input', checkCategoryInput);
+        categorySelect.addEventListener('change', checkCategorySelect);
+    }
+});
 </script>
 HTML;
 
