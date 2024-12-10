@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // アイテムを挿入
         foreach ($items as $item) {
             $titleName = $item['title_name'];
+            $titleDisplayOrder = isset($item['title_display_order']) ? intval($item['title_display_order']) : 0;
             $itemName = $item['item_name'];
             $formatValueId = $item['format_value_id'];
             $displayOrder = isset($item['display_order']) ? intval($item['display_order']) : 0;
@@ -73,8 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 pg_free_result($resultCheckTitle);
             } else {
                 // 新しいタイトルを挿入
-                $queryTitle = "INSERT INTO format_item_titles (format_id, title_name) VALUES ($1, $2) RETURNING title_id";
-                $resultTitle = pg_query_params($conn, $queryTitle, array($formatId, $titleName));
+                $queryTitle = "INSERT INTO format_item_titles (format_id, title_name, display_order) VALUES ($1, $2, $3) RETURNING title_id";
+                $resultTitle = pg_query_params($conn, $queryTitle, array($formatId, $titleName, $titleDisplayOrder));
                 if (!$resultTitle) {
                     throw new Exception("Error in title insertion: " . pg_last_error($conn));
                 }

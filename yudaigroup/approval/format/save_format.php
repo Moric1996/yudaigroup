@@ -21,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryName = isset($_POST['category_name']) ? pg_escape_string($conn, $_POST['category_name']) : '';
     $categorySelect = isset($_POST['category_select']) ? intval($_POST['category_select']) : 0;
     $formatName = isset($_POST['format_name']) ? pg_escape_string($conn, $_POST['format_name']) : '';
+    
+    // 警告メッセージの取得と処理
+    $warningMessage = isset($_POST['warning_message']) ? pg_escape_string($conn, $_POST['warning_message']) : '';
 
     // itemsとtitlesのデータを取得
     $items = isset($_POST['items']) ? $_POST['items'] : [];
@@ -56,13 +59,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // フォーマット名とカテゴリIDの更新クエリ
         $queryFormat = "UPDATE document_formats 
                         SET name = $1, category_id = $2
-                        WHERE format_id = $3 AND deleted_at IS NULL";
+                        WHERE format_id = $3 AND is_deleted = 'f'";
         $resultFormat = pg_query_params($conn, $queryFormat, array($formatName, $categoryId, $format_id));
 
         if (!$resultFormat) {
             error_log("Format update error: " . pg_last_error($conn));
             pg_query($conn, "ROLLBACK");
             echo "フォーマットの更新に失敗しました。";
+            exit;
+        }
+
+        // 警告メッセージの更新または挿入
+        $checkWarningQuery = "SELECT id FROM format_warnings WHERE format_id = $1 AND is_deleted = false";
+        $checkWarningResult = pg_query_params($conn, $checkWarningQuery, array($format_id));
+        
+        if (pg_num_rows($checkWarningResult) > 0) {
+            // 既存の警告メッセージを更新
+            $warningId = pg_fetch_result($checkWarningResult, 0, 'id');
+            $updateWarningQuery = "UPDATE format_warnings 
+                                 SET warning_message = $1, updated_at = CURRENT_TIMESTAMP 
+                                 WHERE id = $2 AND is_deleted = false";
+            $resultWarning = pg_query_params($conn, $updateWarningQuery, array($warningMessage, $warningId));
+        } else {
+            // 新しい警告メッセージを挿入
+            $insertWarningQuery = "INSERT INTO format_warnings (format_id, warning_message, is_deleted, updated_at) 
+                                 VALUES ($1, $2, false, CURRENT_TIMESTAMP)";
+            $resultWarning = pg_query_params($conn, $insertWarningQuery, array($format_id, $warningMessage));
+        }
+
+        if (!$resultWarning) {
+            error_log("Warning message update error: " . pg_last_error($conn));
+            pg_query($conn, "ROLLBACK");
+            echo "警告メッセージの更新に失敗しました。";
             exit;
         }
 
@@ -161,8 +189,8 @@ if (isset($_POST['delete_items']) && is_array($_POST['delete_items'])) {
     foreach ($_POST['delete_items'] as $itemId) {
         // アイテムの削除
         $queryDeleteItem = "UPDATE format_items 
-                           SET is_deleted = 't' 
-                           WHERE format_item_id = $1";
+                            SET is_deleted = 't' 
+                            WHERE format_item_id = $1";
         $resultDeleteItem = pg_query_params($conn, $queryDeleteItem, array($itemId));
 
         if (!$resultDeleteItem) {
@@ -182,7 +210,7 @@ if (isset($_POST['delete_items']) && is_array($_POST['delete_items'])) {
         }
     }
 
-    // タイトルに関連するすべての小枠が削除されたかをチェック
+    // タイトルに関連するすべての小タイトルが削除されたかをチェック
     foreach (array_unique($titleIdsToCheck) as $titleId) {
         $itemCountQuery = "SELECT COUNT(*) AS item_count FROM format_items WHERE title_id = $1 AND is_deleted = 'f'";
         $itemCountResult = pg_query_params($conn, $itemCountQuery, array($titleId));

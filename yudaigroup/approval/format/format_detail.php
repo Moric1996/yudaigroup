@@ -154,9 +154,9 @@ HTML;
             $ybase->ST_PRI .= <<<HTML
         <div class="title-group mb-4">
             <h5 class="mb-3">
-                <label class="form-label">タイトル名:</label>
+                <label class="form-label">大タイトル:</label>
                 <input type="text" name="titles[$currentTitleId][title_name]" value="$titleName" class="form-control" required>
-                <label class="form-label">表示順（大カテゴリ）:</label>
+                <label class="form-label">表示順（大タイトル）:</label>
                 <input type="number" name="titles[$currentTitleId][display_order]" value="$titleDisplayOrder" class="form-control" required min="1">
             </h5>
 HTML;
@@ -165,10 +165,10 @@ HTML;
         $ybase->ST_PRI .= <<<HTML
         <div class="item-row mb-3 border p-3">
             <div class="mb-2">
-                <label class="form-label">小枠:</label>
+                <label class="form-label">小タイトル:</label>
                 <input type="text" name="items[$itemId][item_name]" value="$itemName" class="form-control" required>
                 <input type="hidden" name="items[$itemId][title_id]" value="$titleId">
-                <label class="form-label">表示順（小カテゴリ）:</label>
+                <label class="form-label">表示順（小タイトル）:</label>
                 <input type="number" name="items[$itemId][display_order]" value="$itemDisplayOrder" class="form-control" required min="1">
             </div>
             <div class="mb-2">
@@ -239,16 +239,16 @@ function addNewItem() {
     
     newItemCardBody.innerHTML = 
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">タイトル名:</label>" +
+            "<label class=\"form-label\">大タイトル:</label>" +
             "<input type=\"text\" name=\"titles[new_" + itemCount + "][title_name]\" class=\"form-control\" required>" +
-            "<label class=\"form-label\">表示順（大カテゴリ）:</label>" +
+            "<label class=\"form-label\">表示順（大タイトル）:</label>" +
             "<input type=\"number\" name=\"titles[new_" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">小枠:</label>" +
+            "<label class=\"form-label\">小タイトル:</label>" +
             "<input type=\"text\" name=\"items[new_" + itemCount + "][item_name]\" class=\"form-control\" required>" +
             "<input type=\"hidden\" name=\"items[new_" + itemCount + "][title_id]\" value=\"new_" + itemCount + "\">" +
-            "<label class=\"form-label\">表示順（小カテゴリ）:</label>" +
+            "<label class=\"form-label\">表示順（小タイトル）:</label>" +
             "<input type=\"number\" name=\"items[new_" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
