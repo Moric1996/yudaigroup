@@ -106,15 +106,19 @@ $ybase->ST_PRI .= <<<HTML
                 <div id="items-container">
                     <div class="item-row mb-3 border p-3">
                         <div class="mb-2">
-                            <label class="form-label">大枠:</label>
+                            <label class="form-label">大タイトル:</label>
                             <input type="text" name="items[0][title_name]" class="form-control" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">小枠:</label>
+                            <label class="form-label">表示順（大タイトル）:</label>
+                            <input type="number" name="items[0][title_display_order]" class="form-control" required min="1">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">小タイトル:</label>
                             <input type="text" name="items[0][item_name]" class="form-control" required>
                         </div>
                         <div class="mb-2">
-                            <label class="form-label">表示順（小カテゴリ）:</label>
+                            <label class="form-label">表示順（小タイトル）:</label>
                             <input type="number" name="items[0][display_order]" class="form-control" required min="1">
                         </div>
                         <div class="mb-2">
@@ -157,15 +161,19 @@ function addNewItem() {
     
     newItem.innerHTML = 
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">大枠:</label>" +
+            "<label class=\"form-label\">大タイトル:</label>" +
             "<input type=\"text\" name=\"items[" + itemCount + "][title_name]\" class=\"form-control\" required>" +
         "</div>" +
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">小枠:</label>" +
+            "<label class=\"form-label\">表示順（大タイトル）:</label>" +
+            "<input type=\"number\" name=\"items[" + itemCount + "][title_display_order]\" class=\"form-control\" required min=\"1\">" +
+        "</div>" +
+        "<div class=\"mb-2\">" +
+            "<label class=\"form-label\">小タイトル:</label>" +
             "<input type=\"text\" name=\"items[" + itemCount + "][item_name]\" class=\"form-control\" required>" +
         "</div>" +
         "<div class=\"mb-2\">" +
-            "<label class=\"form-label\">表示順（小カテゴリ）:</label>" +
+            "<label class=\"form-label\">表示順（小タイトル）:</label>" +
             "<input type=\"number\" name=\"items[" + itemCount + "][display_order]\" class=\"form-control\" required min=\"1\">" +
         "</div>" +
         "<div class=\"mb-2\">" +
