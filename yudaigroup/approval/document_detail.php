@@ -1,7 +1,6 @@
 <?php
-
 include('../inc/ybase.inc');
-include('document_detail_methods.php'); // 新しいファイルをインクルード
+include('document_detail_methods.php');
 
 $ybase = new ybase();
 $ybase->session_get();
@@ -11,7 +10,6 @@ $ybase->title = "書類詳細";
 $ybase->HTMLheader();
 $ybase->ST_PRI .= $ybase->header_pri("書類詳細");
 
-// URLパラメータからdocument_idを取得
 $document_id = isset($_GET['document_id']) ? $_GET['document_id'] : null;
 
 if ($document_id) {
@@ -36,9 +34,43 @@ if ($document_id) {
         exit();
     }
 
-    // document_valuesテーブルの項目と値を表示
+    // document_valuesテーブルの項目と値を取得
     $valuesData = getDocumentValues($conn, $document_id);
     if ($valuesData) {
+        // title_nameでグループ化するための配列
+        $groupedValues = [];
+        
+        // データを title_name でグループ化
+        foreach ($valuesData as $valueRow) {
+            if (empty($valueRow['value'])) continue;
+            
+            $titleName = htmlspecialchars($valueRow['title_name'], ENT_QUOTES);
+            $itemName = htmlspecialchars($valueRow['item_name'], ENT_QUOTES);
+            $itemValue = htmlspecialchars($valueRow['value'], ENT_QUOTES);
+            $itemType = $valueRow['item_type'];
+            
+            // 日時のフォーマット処理
+            if ($itemType === 'datetime' || $itemType === 'date' || $itemType === 'time') {
+                $dateTime = new DateTime($itemValue);
+                $itemValue = $dateTime->format('Y年n月j日G時i分');
+            }
+            
+            if ($itemType === 'radio') {
+                // ラジオボタンの場合は値だけを保存
+                $groupedValues[$titleName] = $itemValue;
+            } else {
+                // その他の場合は配列として値を保存
+                if (!isset($groupedValues[$titleName])) {
+                    $groupedValues[$titleName] = [];
+                }
+                $groupedValues[$titleName][] = [
+                    'item_name' => $itemName,
+                    'value' => $itemValue
+                ];
+            }
+        }
+
+        // HTMLの出力
         $ybase->ST_PRI .= <<<HTML
         <div class="container my-5">
             <div class="card shadow-sm">
@@ -58,40 +90,26 @@ if ($document_id) {
                         </tr>
 HTML;
 
-        $radioValues = []; // ラジオボタンの値を一時的に保存する配列
-
-        foreach ($valuesData as $valueRow) {
-            $itemName = htmlspecialchars($valueRow['item_name'], ENT_QUOTES);
-            $itemValue = htmlspecialchars($valueRow['value'], ENT_QUOTES);
-            $itemType = $valueRow['item_type'];
-            $titleName = htmlspecialchars($valueRow['title_name'], ENT_QUOTES);
-
-            // 日時のフォーマットを変更
-            if (!empty($itemValue) && ($itemType === 'datetime' || $itemType === 'date' || $itemType === 'time')) {
-                $dateTime = new DateTime($itemValue);
-                $itemValue = $dateTime->format('Y年n月j日G時i分');
-            }
-
-            if ($itemType === 'radio') {
-                // ラジオボタンの項目は title_name を使用
-                $titleId = $valueRow['title_id'];
-
-                // ラジオボタンの値を一つだけ出力
-                if (!isset($radioValues[$titleId])) {
-                    $radioValues[$titleId] = $itemValue;
-                    $ybase->ST_PRI .= <<<HTML
-                        <tr>
-                            <th scope="row">{$titleName}</th>
-                            <td>{$itemValue}</td>
-                        </tr>
-HTML;
+        // グループ化したデータの表示
+        foreach ($groupedValues as $titleName => $values) {
+            if (is_array($values)) {
+                // 複数の値がある場合
+                $valueStr = '';
+                foreach ($values as $v) {
+                    $valueStr .= "{$v['item_name']}: {$v['value']}<br>";
                 }
-            } else {
-                // その他の項目は通常通り出力
                 $ybase->ST_PRI .= <<<HTML
                         <tr>
-                            <th scope="row">{$titleName} - {$itemName}</th>
-                            <td>{$itemValue}</td>
+                            <th scope="row">{$titleName}</th>
+                            <td>{$valueStr}</td>
+                        </tr>
+HTML;
+            } else {
+                // ラジオボタンなど単一の値の場合
+                $ybase->ST_PRI .= <<<HTML
+                        <tr>
+                            <th scope="row">{$titleName}</th>
+                            <td>{$values}</td>
                         </tr>
 HTML;
             }
