@@ -64,14 +64,17 @@ HTML;
             $itemName = htmlspecialchars($valueRow['item_name'], ENT_QUOTES);
             $itemValue = htmlspecialchars($valueRow['value'], ENT_QUOTES);
             $itemType = $valueRow['item_type'];
+            $titleName = htmlspecialchars($valueRow['title_name'], ENT_QUOTES);
+
+            // 日時のフォーマットを変更
+            if (!empty($itemValue) && ($itemType === 'datetime' || $itemType === 'date' || $itemType === 'time')) {
+                $dateTime = new DateTime($itemValue);
+                $itemValue = $dateTime->format('Y年n月j日G時i分');
+            }
 
             if ($itemType === 'radio') {
                 // ラジオボタンの項目は title_name を使用
                 $titleId = $valueRow['title_id'];
-                $titleQuery = "SELECT title_name FROM format_item_titles WHERE title_id = $titleId";
-                $titleResult = pg_query($conn, $titleQuery);
-                $titleRow = pg_fetch_assoc($titleResult);
-                $titleName = htmlspecialchars($titleRow['title_name'], ENT_QUOTES);
 
                 // ラジオボタンの値を一つだけ出力
                 if (!isset($radioValues[$titleId])) {
@@ -87,7 +90,7 @@ HTML;
                 // その他の項目は通常通り出力
                 $ybase->ST_PRI .= <<<HTML
                         <tr>
-                            <th scope="row">{$itemName}</th>
+                            <th scope="row">{$titleName} - {$itemName}</th>
                             <td>{$itemValue}</td>
                         </tr>
 HTML;
