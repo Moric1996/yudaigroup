@@ -66,7 +66,6 @@ SELECT DISTINCT
     d.document_id,
     m.name AS applicant_name,
     f.name AS document_name,
-    d.created_at,
     d.updated_at,
     aps.status AS step_status,
     aps.step_number
@@ -96,7 +95,7 @@ WHERE d.deleted_at IS NULL
     -- 承認済みの申請も表示するため、pending_previous_approvalsの条件を削除
     -- AND d.document_id NOT IN (SELECT document_id FROM pending_previous_approvals)
     AND aps.step_number = (SELECT approval_order FROM user_approval_order)
-ORDER BY d.created_at DESC;
+ORDER BY d.updated_at DESC;
 ";
 
 $resultDocuments = pg_query($conn, $queryDocuments);
@@ -140,14 +139,12 @@ if (!$resultDocuments) {
                 break;
         }
 
-        $created_at = new DateTime($document['created_at']);
         $updated_at = new DateTime($document['updated_at']);
 
         $ybase->ST_PRI .= "<tr align='center'>";
         $ybase->ST_PRI .= "<td>" . htmlspecialchars($document['applicant_name'], ENT_QUOTES, 'UTF-8') . "</td>";
         $ybase->ST_PRI .= "<td>" . htmlspecialchars($document['document_name'], ENT_QUOTES, 'UTF-8') . "</td>";
         $ybase->ST_PRI .= "<td>" . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . "</td>";
-        $ybase->ST_PRI .= "<td>" . $created_at->format('Y/m/d H:i') . "</td>";
         $ybase->ST_PRI .= "<td>" . $updated_at->format('Y/m/d H:i') . "</td>";
         $ybase->ST_PRI .= "<td>
             <form action='approve.php?document_id={$document['document_id']}' method='post' class='d-inline'>
