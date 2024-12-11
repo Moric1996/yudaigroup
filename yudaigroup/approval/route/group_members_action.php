@@ -14,6 +14,19 @@ if ($group_id === 0) {
     exit;
 }
 
+// グループ名の更新処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_group_name'])) {
+    $group_name = $_POST['group_name'];
+
+    $queryUpdateGroupName = "UPDATE approval_groups SET group_name = $1, updated_at = NOW() WHERE group_id = $2";
+    $resultUpdateGroupName = pg_query_params($conn, $queryUpdateGroupName, array($group_name, $group_id));
+
+    if (!$resultUpdateGroupName) {
+        error_log("Error in group name update query execution: " . pg_last_error($conn));
+        echo "Error in group name update query execution: " . pg_last_error($conn);
+    }
+}
+
 // メンバーの追加処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_member'])) {
     $applicant_id = $_POST['applicant_id'];
