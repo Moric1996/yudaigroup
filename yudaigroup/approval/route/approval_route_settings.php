@@ -232,13 +232,15 @@ pg_free_result($resultAllMembers);
             <form method="POST" action="approval_route_action.php">
                 <input type="hidden" name="group_id" value="$group_id">
                 <div id="approvers-container">
-                    <div class="form-group">
-                        <label for="approval_order_1">第1承認者</label>
-                        <select name="approval_order[]" id="approval_order_1" class="form-control">
+                <div class="form-group">
+                    <label for="approval_order_1">第1承認者</label>
+                    <div class="d-flex">
+                        <select name="approval_order[]" id="approval_order_1" class="form-control mr-2">
                             <option value="">承認者を選択してください</option>
-                            $options
+                            <?php echo $options; ?>
                         </select>
                     </div>
+                </div>
                 </div>
                 <div class="mt-4">
                     <button type="button" class="btn btn-secondary mr-2" onclick="addApprover()">
@@ -281,8 +283,48 @@ $ybase->ST_PRI .= <<<HTML
 
 <script>
 let approverCount = 1;
-const memberOptions = `$options`;
+const memberOptions = `${options}`;
 
+// 全選択肢の初期データを保持
+const allApprovers = Array.from(new DOMParser().parseFromString(memberOptions, 'text/html')
+    .querySelectorAll('option'))
+    .map(option => ({
+        value: option.value,
+        text: option.textContent
+    }));
+
+// 現在選択されている承認者のIDを取得
+function getSelectedApprovers() {
+    return Array.from(document.querySelectorAll('select[name="approval_order[]"]'))
+        .map(select => select.value)
+        .filter(value => value !== '');
+}
+
+// 選択肢を更新
+function updateApproverOptions() {
+    const selectedIds = getSelectedApprovers();
+    const selects = document.querySelectorAll('select[name="approval_order[]"]');
+    
+    selects.forEach((select, index) => {
+        const currentValue = select.value;
+        // 一旦すべての選択肢をクリア
+        select.innerHTML = '<option value="">承認者を選択してください</option>';
+        
+        // 選択可能な承認者のみを追加
+        allApprovers.forEach(approver => {
+            // 他の選択肢で選択されていない、または現在の選択肢である場合のみ表示
+            if (!selectedIds.includes(approver.value) || approver.value === currentValue) {
+                const option = document.createElement('option');
+                option.value = approver.value;
+                option.textContent = approver.text;
+                option.selected = approver.value === currentValue;
+                select.appendChild(option);
+            }
+        });
+    });
+}
+
+// 承認者追加
 function addApprover() {
     approverCount++;
     const container = document.getElementById("approvers-container");
@@ -290,13 +332,42 @@ function addApprover() {
     newApprover.className = "form-group animate__animated animate__fadeIn";
     newApprover.innerHTML = `
         <label for="approval_order_\${approverCount}">第\${approverCount}承認者:</label>
-        <select name="approval_order[]" id="approval_order_\${approverCount}" class="form-control">
-            <option value="">承認者を選択してください</option>
-            \${memberOptions}
-        </select>
+        <div class="d-flex">
+            <select name="approval_order[]" id="approval_order_\${approverCount}" class="form-control mr-2">
+                <option value="">承認者を選択してください</option>
+                \${memberOptions}
+            </select>
+        </div>
     `;
     container.appendChild(newApprover);
+    
+    // イベントリスナーを追加
+    const newSelect = newApprover.querySelector('select');
+    newSelect.addEventListener('change', updateApproverOptions);
+    
+    // 選択肢を更新
+    updateApproverOptions();
 }
+
+// // 承認者削除
+// function removeApprover(button) {
+//     const approverDiv = button.closest('.form-group');
+//     approverDiv.classList.remove('animate__fadeIn');
+//     approverDiv.classList.add('animate__fadeOut');
+    
+//     setTimeout(() => {
+//         approverDiv.remove();
+//         approverCount--;
+//         updateApproverOptions();
+//     }, 500);
+// }
+
+// 初期設定
+document.addEventListener('DOMContentLoaded', () => {
+    // 最初の選択肢にイベントリスナーを設定
+    const firstSelect = document.querySelector('select[name="approval_order[]"]');
+    firstSelect.addEventListener('change', updateApproverOptions);
+});
 </script>
 HTML;
 
