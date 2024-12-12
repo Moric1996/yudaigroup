@@ -13,6 +13,128 @@ $ybase->title = "承認一覧";
 $ybase->HTMLheader();
 $ybase->ST_PRI .= $ybase->header_pri("承認一覧");
 
+// スタイルの追加
+$ybase->ST_PRI .= <<<HTML
+<style>
+    .dashboard-container {
+        background: #f8f9fa;
+        padding: 2rem 0;
+        min-height: 100vh;
+    }
+    .page-title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+        display: inline-block;
+    }
+    .page-title:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(135deg, #4a90e2 0%, #17a2b8 100%);
+        border-radius: 2px;
+    }
+    .action-buttons {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        margin-bottom: 2rem;
+    }
+    .btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .btn-primary {
+        background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(74,144,226,0.2);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(74,144,226,0.3);
+    }
+    .btn-secondary {
+        background: #fff;
+        color: #4a90e2;
+        border: 2px solid #4a90e2;
+    }
+    .btn-secondary:hover {
+        background: #4a90e2;
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    .data-table {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    .table {
+        margin-bottom: 0;
+    }
+    .table thead th {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 1rem;
+    }
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #f0f0f0;
+    }
+    .btn-sm {
+        padding: 0.4rem 1rem;
+        font-size: 0.875rem;
+    }
+    .btn-success {
+        background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(40,167,69,0.2);
+    }
+    .btn-success:hover {
+        transform: translateY(-2px);
+    }
+    .btn-danger {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(220,53,69,0.2);
+    }
+    .btn-danger:hover {
+        transform: translateY(-2px);
+    }
+    .btn-info {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+        border: none;
+        box-sh
+        adow: 0 4px 15px rgba(23,162,184,0.2);
+    }
+    .btn-info:hover {
+        transform: translateY(-2px);
+    }
+    .alert {
+        border-radius: 15px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 2rem;
+        border: none;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+    }
+</style>
+
+<div class="dashboard-container">
+    <div class="container">
+        <h1 class="page-title text-center">承認一覧</h1>
+HTML;
+
 // メッセージ表示
 if (isset($_GET['message'])) {
     $message = htmlspecialchars($_GET['message'], ENT_QUOTES, 'UTF-8');
@@ -21,24 +143,37 @@ if (isset($_GET['message'])) {
 }
 
 $ybase->ST_PRI .= <<<HTML
-<div class="container mt-5">
-    <h1 class="mb-4">承認一覧</h1>
-    <div class="text-right mb-3">
-    <a href='/yudaigroup/approval/index.php' class='btn btn-secondary'>申請TOPへ戻る</a>
-    </div>
+        <div class="action-buttons text-right">
+            <a href='/yudaigroup/approval/index.php' class='btn btn-secondary'>
+                <i class="fas fa-arrow-left mr-2"></i>申請TOPへ戻る
+            </a>
+        </div>
+
+        <div class="data-table">
+            <table class="table table-hover">
+                <thead>
+                    <tr align="center">
+                        <th>申請者</th>
+                        <th>書類名</th>
+                        <th>ステータス</th>
+                        <th>申請日時</th>
+                        <th>操作</th>
+                        <th>確認</th>
+                        <th>Document ID</th>
+                    </tr>
+                </thead>
+                <tbody>
 HTML;
 
 $applicant_id = $ybase->my_employee_num;
-echo "Logged in applicant_id: " . htmlspecialchars($applicant_id, ENT_QUOTES, 'UTF-8') . "<br>";
 
-// 承認対象の申請を取得するクエリ
+// [Previous query remains the same]
 $queryDocuments = "
     WITH approver_groups AS (
     SELECT DISTINCT ar.group_id, ar.approval_order
     FROM approval_routes ar
     WHERE ar.is_deleted = false
 ),
--- Get the current user's approval order
 user_approval_order AS (
     SELECT ar.approval_order
     FROM approval_routes ar
@@ -46,7 +181,6 @@ user_approval_order AS (
     AND ar.is_deleted = false
     LIMIT 1
 ),
--- Check for any pending approvals in previous steps
 pending_previous_approvals AS (
     SELECT d.document_id
     FROM documents d
@@ -92,8 +226,6 @@ WHERE d.deleted_at IS NULL
             AND ar.applicant_id = '$applicant_id'
             AND ar.is_deleted = false
     )
-    -- 承認済みの申請も表示するため、pending_previous_approvalsの条件を削除
-    -- AND d.document_id NOT IN (SELECT document_id FROM pending_previous_approvals)
     AND aps.step_number = (SELECT approval_order FROM user_approval_order)
 ORDER BY d.updated_at DESC;
 ";
@@ -102,23 +234,8 @@ $resultDocuments = pg_query($conn, $queryDocuments);
 
 if (!$resultDocuments) {
     error_log("Error in query execution: " . pg_last_error($conn));
-    echo "Error in query execution: " . pg_last_error($conn);
+    $ybase->ST_PRI .= "<tr><td colspan='7' class='text-center'>エラーが発生しました。</td></tr>";
 } else {
-    $ybase->ST_PRI .= "<table class='table table-bordered table-hover table-sm' style='font-size:80%;'>";
-    $ybase->ST_PRI .= "<thead>
-        <tr align='center' class='table-primary'>
-            <th scope='col'>申請者</th>
-            <th scope='col'>書類名</th>
-            <th scope='col'>ステータス</th>
-            <th scope='col'>申請日時</th>
-            <th scope='col'>最終更新</th>
-            <th scope='col'>操作</th>
-            <th scope='col'>確認</th>
-            <th scope='col'>Document ID</th>
-        </tr>
-        </thead>";
-    $ybase->ST_PRI .= "<tbody>";
-
     $hasDocuments = false;
 
     while ($document = pg_fetch_assoc($resultDocuments)) {
@@ -126,15 +243,19 @@ if (!$resultDocuments) {
 
         switch ($document['step_status']) {
             case 0:
+                $statusClass = 'status-progress';
                 $status = '進行中';
                 break;
             case 1:
+                $statusClass = 'status-complete';
                 $status = '承認済み';
                 break;
             case 2:
+                $statusClass = 'status-rejected';
                 $status = '却下';
                 break;
             default:
+                $statusClass = '';
                 $status = '不明';
                 break;
         }
@@ -144,7 +265,7 @@ if (!$resultDocuments) {
         $ybase->ST_PRI .= "<tr align='center'>";
         $ybase->ST_PRI .= "<td>" . htmlspecialchars($document['applicant_name'], ENT_QUOTES, 'UTF-8') . "</td>";
         $ybase->ST_PRI .= "<td>" . htmlspecialchars($document['document_name'], ENT_QUOTES, 'UTF-8') . "</td>";
-        $ybase->ST_PRI .= "<td>" . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . "</td>";
+        $ybase->ST_PRI .= "<td><span class='status-badge {$statusClass}'>" . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . "</span></td>";
         $ybase->ST_PRI .= "<td>" . $updated_at->format('Y/m/d H:i') . "</td>";
         $ybase->ST_PRI .= "<td>
             <form action='approve.php?document_id={$document['document_id']}' method='post' class='d-inline'>
@@ -157,16 +278,20 @@ if (!$resultDocuments) {
         $ybase->ST_PRI .= "</tr>";
     }
 
-    $ybase->ST_PRI .= "</tbody></table>";
-
     if (!$hasDocuments) {
-        $ybase->ST_PRI .= "<p class='text-muted'>承認対象の申請はありません。</p>";
+        $ybase->ST_PRI .= "<tr><td colspan='7' class='text-center text-muted'>承認対象の申請はありません。</td></tr>";
     }
 
     pg_free_result($resultDocuments);
 }
 
-$ybase->ST_PRI .= "</div>";
+$ybase->ST_PRI .= <<<HTML
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+HTML;
 
 $ybase->HTMLfooter();
 $ybase->priout();
