@@ -19,7 +19,7 @@ $ybase->ST_PRI .= <<<HTML
 HTML;
 
 // カテゴリを取得
-$queryCategories = "SELECT * FROM document_format_categories WHERE deleted_at IS NULL ORDER BY category_name ASC";
+$queryCategories = "SELECT * FROM document_format_categories WHERE is_deleted = 'f' ORDER BY category_name ASC";
 $resultCategories = pg_query($conn, $queryCategories);
 
 if (!$resultCategories) {
@@ -59,8 +59,12 @@ HTML;
                     $formatName = htmlspecialchars($format['name'], ENT_QUOTES, 'UTF-8');
                     $formatId = htmlspecialchars($format['format_id'], ENT_QUOTES, 'UTF-8');
                     $ybase->ST_PRI .= <<<HTML
-                    <li class="list-group-item">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
                         <a href="format_detail.php?format_id={$formatId}">$formatName</a>
+                        <form method="post" action="delete_format.php" onsubmit="return confirm('本当に削除しますか？');">
+                            <input type="hidden" name="format_id" value="$formatId">
+                            <button type="submit" class="btn btn-danger btn-sm">削除</button>
+                        </form>
                     </li>
 HTML;
                 }
