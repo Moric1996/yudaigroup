@@ -243,15 +243,15 @@ $ybase->ST_PRI .= <<<HTML
 
             <div class="custom-card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h2 class="h5 mb-0">アイテム</h2>
-                    <button type="button" class="btn btn-secondary" onclick="addNewItem()">
-                        <i class="fas fa-plus me-2"></i>アイテムを追加
-                    </button>
+                    <h2 class="h5 mb-0">新しいアイテムを追加</h2>
+                    
                 </div>
                 <div class="card-body">
                     <div id="items-container">
-                        <!-- アイテム行のテンプレート -->
                     </div>
+                    <button type="button" class="btn btn-secondary" onclick="addNewItem()">
+                        <i class="fas fa-plus me-2"></i>アイテムを追加
+                    </button>
                 </div>
             </div>
 
@@ -307,7 +307,6 @@ function addNewItem() {
         "</div>" +
         "<div class=\"d-flex justify-content-between\">" +
         "<button type=\"button\" class=\"btn btn-danger\" onclick=\"removeItem(this)\">削除</button>" +
-        "<button type=\"button\" class=\"btn btn-secondary\" onclick=\"addNewItem()\">アイテムを追加</button>" +
     "</div>";
     
     container.appendChild(newItem);
