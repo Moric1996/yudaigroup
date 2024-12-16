@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // 新しいアイテムにタイトルIDを設定
                 foreach ($items as $itemId => $itemData) {
-                    if (strpos($itemId, 'new_') === 0 && $itemData['title_name'] === $titleName) {
+                    if (strpos($itemId, 'new_') === 0 && $itemData['title_id'] === $titleId) {
                         $items[$itemId]['title_id'] = $newTitleId;
                     }
                 }
