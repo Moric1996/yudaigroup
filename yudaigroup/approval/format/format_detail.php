@@ -258,11 +258,16 @@ function addNewItem() {
                 options +
             "</select>" +
         "</div>" +
-        "<button type=\"button\" class=\"btn btn-danger\" onclick=\"removeItem(this)\">削除</button>";
+        "<button type=\"button\" class=\"btn btn-danger\" onclick=\"removeNewItem(this)\">削除</button>";
     
     newItemCard.appendChild(newItemCardBody);
     container.appendChild(newItemCard);
     itemCount++;
+}
+
+function removeNewItem(button) {
+    var itemRow = button.closest(".card");
+    itemRow.remove();
 }
 
 function removeItem(button) {
