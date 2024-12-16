@@ -41,36 +41,38 @@ function deleteDocument($conn, $document_id) {
 }
 
 function getDocumentFormat($conn, $document_id) {
-    $formatQuery = "
-        SELECT f.name AS format_name, c.category_name
+    $query = "
+        SELECT df.name AS format_name, dfc.category_name
         FROM documents d
-        JOIN document_formats f ON d.format_id = f.format_id
-        JOIN document_format_categories c ON f.category_id = c.category_id
-        WHERE d.document_id = $document_id
+        JOIN document_formats df ON d.format_id = df.format_id
+        JOIN document_format_categories dfc ON df.category_id = dfc.category_id
+        WHERE d.document_id = $1 AND d.is_deleted = 'f' AND df.is_deleted = 'f' AND dfc.is_deleted = 'f'
     ";
-    $formatResult = pg_query($conn, $formatQuery);
-    if ($formatResult) {
-        return pg_fetch_assoc($formatResult);
-    } else {
-        error_log("Error in format query execution: " . pg_last_error($conn));
-        return false;
+    $result = pg_query_params($conn, $query, array($document_id));
+    if ($result && pg_num_rows($result) > 0) {
+        return pg_fetch_assoc($result);
     }
+    return false;
 }
 
 function getDocumentValues($conn, $document_id) {
-    $valuesQuery = "
-        SELECT dv.format_item_id, fi.item_name, dv.value, fiv.item_type, fi.title_id
+    $query = "
+        SELECT fi.item_name, dv.value, fiv.item_type, fit.title_name, fit.title_id
         FROM document_values dv
+        JOIN format_item_values fiv ON dv.format_value_id = fiv.format_value_id
         JOIN format_items fi ON dv.format_item_id = fi.format_item_id
-        LEFT JOIN format_item_values fiv ON fi.format_value_id = fiv.format_value_id
-        WHERE dv.document_id = $document_id
+        JOIN format_item_titles fit ON fi.title_id = fit.title_id
+        WHERE dv.document_id = $1 AND dv.is_deleted = 'f' AND fiv.is_deleted = 'f' AND fi.is_deleted = 'f' AND fit.is_deleted = 'f'
+        ORDER BY fit.display_order, fi.display_order
     ";
-    $valuesResult = pg_query($conn, $valuesQuery);
-    if ($valuesResult) {
-        return pg_fetch_all($valuesResult);
-    } else {
-        error_log("Error in values query execution: " . pg_last_error($conn));
-        return false;
+    $result = pg_query_params($conn, $query, array($document_id));
+    if ($result) {
+        $values = [];
+        while ($row = pg_fetch_assoc($result)) {
+            $values[] = $row;
+        }
+        return $values;
     }
+    return false;
 }
 ?>
