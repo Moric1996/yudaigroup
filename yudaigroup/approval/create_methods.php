@@ -53,7 +53,7 @@ function getItems($conn, $selectedFormatId) {
 
 function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
     $statusCodes = 1;
-    $documentInsertQuery = "INSERT INTO documents (applicant_id, format_id, status_codes, created_at, updated_at) VALUES ('$applicantId', $selectedFormatId, '$statusCodes', NOW(), NOW()) RETURNING document_id";
+    $documentInsertQuery = "INSERT INTO documents (applicant_id, format_id, status_codes, updated_at) VALUES ('$applicantId', $selectedFormatId, '$statusCodes', NOW()) RETURNING document_id";
     $documentResult = pg_query($conn, $documentInsertQuery);
 
     if ($documentResult) {

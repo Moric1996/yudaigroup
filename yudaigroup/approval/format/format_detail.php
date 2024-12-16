@@ -72,23 +72,157 @@ $ybase->HTMLheader();
 $ybase->ST_PRI .= $ybase->header_pri("フォーマット編集: $formatName");
 
 $ybase->ST_PRI .= <<<HTML
-<div class="container mt-5">
-    <h1 class="mb-4">フォーマット編集</h1>
-    <form method="post" action="save_format.php">
-        <input type="hidden" name="format_id" value="$format_id">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2 class="h5 mb-0">カテゴリ:</h2>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label for="category_name" class="form-label">カテゴリ名を入力:</label>
-                    <input type="text" name="category_name" id="category_name" class="form-control" oninput="checkCategoryInput()">
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            --hover-transition: all 0.3s ease;
+        }
+
+        .page-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 0 0 1rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+            transition: var(--hover-transition);
+        }
+
+        .custom-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12);
+        }
+
+        .custom-card .card-header {
+            background: white;
+            border-bottom: 2px solid #e3e6f0;
+            border-radius: 1rem 1rem 0 0;
+            padding: 1.25rem;
+        }
+
+        .custom-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .item-row {
+            border-left: 4px solid #4e73df !important;
+            border-radius: 0.5rem;
+            transition: var(--hover-transition);
+        }
+
+        .item-row:hover {
+            background-color: #f8f9fc;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 0.5rem;
+            border: 1px solid #e3e6f0;
+            transition: var(--hover-transition);
+        }
+
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+
+        .btn {
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: var(--hover-transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(78, 115, 223, 0.25);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74a3b 0%, #c72114 100%);
+            border: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #858796 0%, #60616f 100%);
+            border: none;
+            color: white;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+            padding: 1rem 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1.5rem;
+                border-radius: 0 0 0.5rem 0.5rem;
+            }
+
+            .custom-card {
+                margin-bottom: 1rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="">
+    <div class="container">
+        <h1 class="page-title text-center mt-4">フォーマット編集</h1>
+    </div>
+
+<div class="container mt-4">
+<form method="post" action="save_format.php" onsubmit="return validateForm()">
+<input type="hidden" name="format_id" value="$format_id">
+            <div class="custom-card mb-4">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">基本情報</h2>
                 </div>
-                <div class="mb-3">
-                    <label for="category_select" class="form-label">既存のカテゴリを選択:</label>
-                    <select name="category_select" id="category_select" class="form-control" onchange="checkCategorySelect()">
-                        <option value="">カテゴリを選択してください</option>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category_name" class="form-label">
+                                    <i class="fas fa-folder me-2"></i>カテゴリ名を入力
+                                </label>
+                                <input type="text" name="category_name" id="category_name" class="form-control" oninput="checkCategoryInput()">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category_select" class="form-label">
+                                    <i class="fas fa-list me-2"></i>既存のカテゴリを選択
+                                </label>
+                                <select name="category_select" id="category_select" class="form-control" onchange="checkCategorySelect()">
+                                <option value="">カテゴリを選択してください</option>
 HTML;
 
 foreach ($categories as $category) {
@@ -102,14 +236,25 @@ HTML;
 
 $ybase->ST_PRI .= <<<HTML
                     </select>
-                </div>
-                <h3 class="h6">フォーマット名: <input type="text" name="format_name" value="$formatName" class="form-control" required></h3>
-                <div class="mb-3">
-                    <label for="warning_message" class="form-label">備考、注意書き等:</label>
-                    <textarea name="warning_message" id="warning_message" class="form-control" rows="4">$warningMessage</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="format_name" class="form-label">
+                            <i class="fas fa-file-alt me-2"></i>フォーマット名
+                        </label>
+                        <input type="text" name="format_name" value="$formatName" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="warning_message" class="form-label">
+                            <i class="fas fa-exclamation-triangle me-2"></i>備考、注意書き等
+                        </label>
+                        <textarea name="warning_message" id="warning_message" class="form-control" rows="4">$warningMessage</textarea>
+                        </div>
                 </div>
             </div>
-        </div>
 HTML;
 
 // フォーマットアイテムを取得
@@ -125,7 +270,7 @@ if (!$resultItems) {
     echo "Error in query execution: " . pg_last_error($conn);
 } else {
     $ybase->ST_PRI .= <<<HTML
-    <div class="card mb-4">
+    <div class="custom-card mb-4">
         <div class="card-header">
             <h4 class="h6 mb-0">アイテム一覧</h4>
         </div>
@@ -198,23 +343,28 @@ HTML;
             </div>
         </div>
     </div>
-    <div class="card mb-4">
-        <div class="card-header">
-            <h4 class="h6 mb-0">新しいアイテムを追加</h4>
-        </div>
-        <div class="card-body">
-            <div id="new-items-container">
+    <div class="custom-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">新しいアイテムを追加</h2>
+                    
+                </div>
+                <div class="card-body">
+                    <div id="new-items-container">
+                    </div>
+                    <button type="button" class="btn btn-secondary" onclick="addNewItem()">
+                        <i class="fas fa-plus me-2"></i>アイテムを追加
+                    </button>
+                </div>
             </div>
-            <button type="button" class="btn btn-secondary" onclick="addNewItem()">アイテムを追加</button>
-        </div>
-    </div>
 HTML;
     pg_free_result($resultItems);  // Free the result for clean-up
 }
 
 $ybase->ST_PRI .= <<<HTML
-        <button type="submit" class="btn btn-primary">保存</button>
+    <div class="d-flex justify-content-end gap-3">
         <a href="index.php" class="btn btn-link">戻る</a>
+        <button type="submit" class="btn btn-primary">保存</button>
+    </div>
     </form>
 </div>
 
@@ -225,10 +375,7 @@ var itemCount = 1;
 function addNewItem() {
     var container = document.getElementById("new-items-container");
     var newItemCard = document.createElement("div");
-    newItemCard.className = "card mb-3";
-    
-    var newItemCardBody = document.createElement("div");
-    newItemCardBody.className = "card-body";
+    newItemCard.className = "item-row mb-3 border p-3";
 
     // 属性のオプションを生成
     var options = "";
@@ -236,8 +383,8 @@ function addNewItem() {
         var value = formatValues[i];
         options += "<option value=\"" + value.format_value_id + "\">" + value.item_name + "</option>";
     }
-    
-    newItemCardBody.innerHTML = 
+
+    newItemCard.innerHTML = 
         "<div class=\"mb-2\">" +
             "<label class=\"form-label\">大タイトル:</label>" +
             "<input type=\"text\" name=\"titles[new_" + itemCount + "][title_name]\" class=\"form-control\" required>" +
@@ -259,20 +406,20 @@ function addNewItem() {
             "</select>" +
         "</div>" +
         "<button type=\"button\" class=\"btn btn-danger\" onclick=\"removeNewItem(this)\">削除</button>";
-    
-    newItemCard.appendChild(newItemCardBody);
+
     container.appendChild(newItemCard);
     itemCount++;
 }
 
 function removeNewItem(button) {
-    var itemRow = button.closest(".card");
+    var itemRow = button.closest(".item-row");
     itemRow.remove();
 }
 
 function removeItem(button) {
     var itemRow = button.closest(".item-row");
     var titleId = itemRow.querySelector("input[name^='items[']").value;
+
     // 削除マークを付与
     var hiddenInput = document.createElement('input');
     hiddenInput.type = 'hidden';
