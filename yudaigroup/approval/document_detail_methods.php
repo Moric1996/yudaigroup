@@ -1,41 +1,40 @@
 <?php
 
 function deleteDocument($conn, $document_id) {
-    // approval_historyテーブルの関連レコードを削除
-    $deleteHistoryQuery = "DELETE FROM approval_history WHERE document_id = $document_id";
-    $deleteHistoryResult = pg_query($conn, $deleteHistoryQuery);
+    // トランザクションを開始
+    pg_query($conn, "BEGIN");
 
-    if ($deleteHistoryResult) {
-        // approval_statusテーブルの関連レコードを削除
-        $deleteStatusQuery = "DELETE FROM approval_status WHERE document_id = $document_id";
-        $deleteStatusResult = pg_query($conn, $deleteStatusQuery);
+    // approval_statusテーブルの関連レコードを論理削除
+    $updateStatusQuery = "UPDATE approval_status SET is_deleted = 't' WHERE document_id = $1";
+    $updateStatusResult = pg_query_params($conn, $updateStatusQuery, array($document_id));
 
-        if ($deleteStatusResult) {
-            // document_valuesテーブルの関連レコードを削除
-            $deleteValuesQuery = "DELETE FROM document_values WHERE document_id = $document_id";
-            $deleteValuesResult = pg_query($conn, $deleteValuesQuery);
+    if ($updateStatusResult) {
+        // document_valuesテーブルの関連レコードを論理削除
+        $updateValuesQuery = "UPDATE document_values SET is_deleted = 't' WHERE document_id = $1";
+        $updateValuesResult = pg_query_params($conn, $updateValuesQuery, array($document_id));
 
-            if ($deleteValuesResult) {
-                // documentsテーブルのレコードを削除
-                $deleteQuery = "DELETE FROM documents WHERE document_id = $document_id";
-                $deleteResult = pg_query($conn, $deleteQuery);
+        if ($updateValuesResult) {
+            // documentsテーブルのレコードを論理削除
+            $updateDocumentsQuery = "UPDATE documents SET is_deleted = 't' WHERE document_id = $1";
+            $updateDocumentsResult = pg_query_params($conn, $updateDocumentsQuery, array($document_id));
 
-                if ($deleteResult) {
-                    return true;
-                } else {
-                    error_log("Error in delete query execution: " . pg_last_error($conn));
-                    return false;
-                }
+            if ($updateDocumentsResult) {
+                // トランザクションをコミット
+                pg_query($conn, "COMMIT");
+                return true;
             } else {
-                error_log("Error in delete values query execution: " . pg_last_error($conn));
+                error_log("Error in update documents query execution: " . pg_last_error($conn));
+                pg_query($conn, "ROLLBACK");
                 return false;
             }
         } else {
-            error_log("Error in delete status query execution: " . pg_last_error($conn));
+            error_log("Error in update values query execution: " . pg_last_error($conn));
+            pg_query($conn, "ROLLBACK");
             return false;
         }
     } else {
-        error_log("Error in delete history query execution: " . pg_last_error($conn));
+        error_log("Error in update status query execution: " . pg_last_error($conn));
+        pg_query($conn, "ROLLBACK");
         return false;
     }
 }
