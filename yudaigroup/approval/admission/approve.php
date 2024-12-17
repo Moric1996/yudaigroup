@@ -56,14 +56,6 @@ try {
     $authData = pg_fetch_assoc($resultAuthCheck);
     $group_id = $authData['group_id'];
 
-    // 承認履歴に記録
-    $queryHistory = "
-        INSERT INTO approval_history 
-        (document_id, group_id, step_number, approver_id, action, comment, created_at)
-        VALUES 
-        ('$document_id', '$group_id', '$current_step', '$approver_id', '$action', '$comment', NOW())
-    ";
-    pg_query($conn, $queryHistory);
 
     $status = ($action === 'approved') ? 1 : 2; // 1:承認, 2:却下
 
@@ -82,9 +74,9 @@ try {
         $next_step = $current_step + 1;
         $queryInsertNextStatus = "
             INSERT INTO approval_status 
-            (document_id, step_number, status, created_at, updated_at)
+            (document_id, step_number, status, updated_at)
             VALUES 
-            ('$document_id', '$next_step', 0, NOW(), NOW())
+            ('$document_id', '$next_step', 0, NOW())
         ";
         pg_query($conn, $queryInsertNextStatus);
     }
