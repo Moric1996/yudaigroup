@@ -69,13 +69,26 @@ function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
             if ($itemType === 'radio') {
                 // ラジオボタンの値を特別に処理
                 $value = isset($_POST["radio_group"]) ? $_POST["radio_group"] : '';
+            } elseif ($itemType === 'checkbox') {
+                // チェックボックスの値を特別に処理
+                if (isset($_POST["item_$formatItemId"])) {
+                    foreach ($_POST["item_$formatItemId"] as $checkboxValue) {
+                        $documentValuesQuery = "INSERT INTO document_values (format_value_id, document_id, format_item_id, value, is_deleted, updated_at) VALUES ($formatValueId, $documentId, $formatItemId, '$checkboxValue', FALSE, NOW())";
+                        pg_query($conn, $documentValuesQuery);
+                    }
+                    continue; // チェックボックスの場合、ループ内で処理を完了するため、次のアイテムに進む
+                } else {
+                    $value = '';
+                }
             } else {
                 // その他の項目の値を処理
                 $value = isset($_POST["item_$formatItemId"]) ? $_POST["item_$formatItemId"] : '';
             }
 
-            $documentValuesQuery = "INSERT INTO document_values (format_value_id, document_id, format_item_id, value, is_deleted, updated_at) VALUES ($formatValueId, $documentId, $formatItemId, '$value', FALSE, NOW())";
-            pg_query($conn, $documentValuesQuery);
+            if ($itemType !== 'checkbox') {
+                $documentValuesQuery = "INSERT INTO document_values (format_value_id, document_id, format_item_id, value, is_deleted, updated_at) VALUES ($formatValueId, $documentId, $formatItemId, '$value', FALSE, NOW())";
+                pg_query($conn, $documentValuesQuery);
+            }
         }
 
         // 承認ステータスの初期化
