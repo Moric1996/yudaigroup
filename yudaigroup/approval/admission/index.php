@@ -128,6 +128,24 @@ $ybase->ST_PRI .= <<<HTML
         border: none;
         box-shadow: 0 2px 15px rgba(0,0,0,0.05);
     }
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .status-progress {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    .status-complete {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    .status-rejected {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
 </style>
 
 <div class="dashboard-container">
@@ -216,7 +234,7 @@ JOIN approval_routes ar ON ar.group_id = (
 JOIN approver_groups ag ON ag.group_id = ar.group_id
 LEFT JOIN approval_status aps ON d.document_id = aps.document_id 
     AND aps.step_number = ag.approval_order
-WHERE d.deleted_at IS NULL
+WHERE d.is_deleted = false  -- ここに条件を追加
     AND d.applicant_id != '$applicant_id'
     AND EXISTS (
         SELECT 1
