@@ -119,7 +119,7 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
     
         // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
