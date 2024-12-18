@@ -336,10 +336,16 @@ $warningMessage = getWarningMessageForDisplay($conn, $selectedFormatId);
             case 'number':
                 $ybase->ST_PRI .= "<label>$itemName</label><input type='number' name='item_{$item['format_item_id']}' class='form-control' placeholder='0'>";
                 break;
+            case 'checkbox':
+                $ybase->ST_PRI .= "<div class='form-check'>
+                    <input type='checkbox' name='item_{$item['format_item_id']}[]' value='$itemName' class='form-check-input' id='checkbox_{$item['format_item_id']}'>
+                    <label class='form-check-label' for='checkbox_{$item['format_item_id']}'>$itemName</label>
+                </div>";
+                break;
         }
-
+        
         $ybase->ST_PRI .= "</div>";
-    }
+        }
 
     $ybase->ST_PRI .= "</div>";
 
