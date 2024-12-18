@@ -119,9 +119,9 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
-    
-        // 承認者の名前を取得
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+
+    // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
     $resultApproverName = pg_query($conn, $queryApproverName);
     $approverNameRow = pg_fetch_assoc($resultApproverName);
@@ -132,10 +132,21 @@ try {
     $resultApplicantName = pg_query($conn, $queryApplicantName);
     $applicantNameRow = pg_fetch_assoc($resultApplicantName);
     $applicant_name = $applicantNameRow['name'];
-    
-    $message_text = "$approver_name さんが $applicant_name さんの申請を承認しました。よかったね。";
-    
-        if ($action === 'approved' && $current_step < $max_step) {
+
+    // 申請書のフォーマット名を取得
+    $queryDocumentFormat = "
+        SELECT df.name 
+        FROM document_formats df 
+        JOIN documents d ON df.format_id = d.format_id 
+        WHERE d.document_id = $document_id
+    ";
+    $resultDocumentFormat = pg_query($conn, $queryDocumentFormat);
+    $documentFormatRow = pg_fetch_assoc($resultDocumentFormat);
+    $document_format_name = $documentFormatRow['name'];
+
+    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を承認しました。よかったね。";
+
+    if ($action === 'approved' && $current_step < $max_step) {
         // 次の承認者を取得
         $queryNextApprover = "
             SELECT ar.applicant_id, m.name
