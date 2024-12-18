@@ -15,7 +15,7 @@ $ybase->ST_PRI .= <<<HTML
 <style>
     :root {
         --primary-gradient: linear-gradient(135deg, #2afaa3 0%, #4f46e5 100%);
-        --secondary-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        --secondary-gradient: linear-gradient(135deg, #f8f9fa 0%,rgb(239, 233, 233) 100%);
         --card-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
         --transition-speed: 0.3s;
     }
@@ -85,12 +85,11 @@ $ybase->ST_PRI .= <<<HTML
     }
 
     .approval-list {
-        border-left: 4px solid #4f46e5;
         padding-left: 1rem;
     }
 
     .approval-item {
-        background: #f8fafc;
+        background:rgb(248, 252, 249);
         border-radius: 10px;
         padding: 1rem;
         margin-bottom: 0.5rem;
@@ -120,9 +119,9 @@ $ybase->ST_PRI .= <<<HTML
     }
 
     .btn-secondary {
-        background: var(--secondary-gradient);
-        color: #4b5563;
-        border: none;
+        background: white;
+        color: #4a90e2;
+        border: 2px solid #4a90e2;
     }
 
     .btn-secondary:hover {
@@ -139,6 +138,38 @@ $ybase->ST_PRI .= <<<HTML
             padding: 1.5rem;
         }
     }
+
+    .section-title {
+        position: relative;
+        color: #2d3748;
+        font-weight: 600;
+        padding-left: 1rem;
+
+    }
+
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: var(--primary-gradient);
+        border-radius: 2px;
+    }
+
+    .badge-gradient {
+    display: inline-block;
+    padding: 0.5em 1em;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background: linear-gradient(45deg, #6a11cb, #2575fc); /* 紫から青のグラデーション */
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
 </style>
 
 <div class="main-container">
@@ -190,7 +221,7 @@ $resultRoutes = pg_query_params($conn, $queryRoutes, array($group_id));
 if ($resultRoutes) {
 $ybase->ST_PRI .= <<<HTML
 <div class="form-card animate__animated animate__fadeIn">
-    <h2 class="h4 mb-4">現在の承認ルート</h2>
+    <h3 class="section-title mb-4">現在の承認ルート</h3>
     <div class="approval-list">
 HTML;
 while ($row = pg_fetch_assoc($resultRoutes)) {
@@ -198,7 +229,7 @@ while ($row = pg_fetch_assoc($resultRoutes)) {
     $memberName = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
     $ybase->ST_PRI .= <<<HTML
         <div class="approval-item">
-            <span class="badge badge-primary mr-2">第{$approvalOrder}承認者</span>
+        <span class="badge badge-gradient mr-2">第{$approvalOrder}承認者</span>
             <span class="font-weight-medium">{$memberName}</span>
         </div>
 HTML;
@@ -228,7 +259,7 @@ pg_free_result($resultAllMembers);
 
     $ybase->ST_PRI .= <<<HTML
         <div class="form-card animate__animated animate__fadeIn">
-            <h2 class="h4 mb-4">承認者を追加</h2>
+        <h3 class="section-title mb-4">承認者を編集</h3>
             <form method="POST" action="approval_route_action.php">
                 <input type="hidden" name="group_id" value="$group_id">
                 <div id="approvers-container">
