@@ -119,7 +119,7 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
 
     // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
@@ -162,7 +162,7 @@ try {
         if ($nextApprover = pg_fetch_assoc($resultNextApprover)) {
             $next_approver_id = $nextApprover['applicant_id'];
             $next_approver_name = $nextApprover['name'];
-            $message_text .= " $next_approver_name さんは申請を確認してください。";
+            $message_text .= " *$next_approver_name* さんは申請を確認してください。";
         } else {
             $message_text .= " 承認ルートが途中で変更されています。申請をやり直してください";
         }
