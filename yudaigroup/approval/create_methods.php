@@ -143,13 +143,11 @@ function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
             SELECT ar.applicant_id, m.name
             FROM approval_routes ar
             JOIN member m ON ar.applicant_id = m.mem_id
-            JOIN approval_status ast ON ar.approval_order = ast.step_number
             JOIN group_members gm ON ar.group_id = gm.group_id
-            WHERE ast.document_id = $documentId
-            AND ast.status = 0
-            AND ar.is_deleted = false
-            AND gm.applicant_id = '$applicantId'  -- 申請者のグループに基づくフィルタリング
+            WHERE ar.group_id = (SELECT group_id FROM group_members WHERE applicant_id = '$applicantId' AND is_deleted = false LIMIT 1)
             AND ar.approval_order = (SELECT current_step FROM documents WHERE document_id = $documentId)
+            AND ar.is_deleted = false
+            AND gm.is_deleted = false
             LIMIT 1
         ";
         $resultNextApprover = pg_query($conn, $queryNextApprover);
@@ -161,7 +159,7 @@ function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
         }
 
         // Slack通知の送信
-        $slack_webhook_url = 'https://hooks.slack.com/services/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';
+        $slack_webhook_url = 'https://hooks.slack.com/services/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';
         $message = array('text' => $message_text);
 
         $options = array(
