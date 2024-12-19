@@ -150,8 +150,17 @@ $ybase->ST_PRI .= <<<HTML
 HTML;
 
 // 全メンバーを取得してドロップダウンリストに表示
-$queryAllMembers = "SELECT mem_id, name FROM member WHERE mem_id NOT IN (SELECT applicant_id FROM group_members WHERE group_id = $1 AND is_deleted = 'f') ORDER BY name ASC";
-$resultAllMembers = pg_query_params($conn, $queryAllMembers, array($group_id));
+$queryAllMembers = "
+    SELECT mem_id, name 
+    FROM member 
+    WHERE mem_id NOT IN (
+        SELECT applicant_id 
+        FROM group_members 
+        WHERE is_deleted = 'f'
+    ) 
+    ORDER BY name ASC
+";
+$resultAllMembers = pg_query($conn, $queryAllMembers);
 
 if (!$resultAllMembers) {
     error_log("Error in query execution: " . pg_last_error($conn));
@@ -182,6 +191,7 @@ HTML;
 HTML;
     pg_free_result($resultAllMembers);
 }
+
 // メンバーを取得
 $queryMembers = "
     SELECT m.name, m.mem_id
@@ -196,11 +206,9 @@ if (!$resultMembers) {
     $ybase->ST_PRI .= "<div class='alert alert-danger'>エラーが発生しました。</div>";
 } else {
     $ybase->ST_PRI .= "<ul class='list-group'>";
-    $existingMemberIds = [];
     while ($row = pg_fetch_assoc($resultMembers)) {
         $memberName = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
         $memberId = htmlspecialchars($row['mem_id'], ENT_QUOTES, 'UTF-8');
-        $existingMemberIds[] = $memberId;
         $ybase->ST_PRI .= <<<HTML
         <li class="list-group-item d-flex justify-content-between align-items-center">
             $memberName
