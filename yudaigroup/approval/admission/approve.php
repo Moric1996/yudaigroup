@@ -119,9 +119,9 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
-    
-        // 承認者の名前を取得
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+
+    // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
     $resultApproverName = pg_query($conn, $queryApproverName);
     $approverNameRow = pg_fetch_assoc($resultApproverName);
@@ -132,10 +132,23 @@ try {
     $resultApplicantName = pg_query($conn, $queryApplicantName);
     $applicantNameRow = pg_fetch_assoc($resultApplicantName);
     $applicant_name = $applicantNameRow['name'];
-    
-    $message_text = "$approver_name さんが $applicant_name さんの申請を承認しました。よかったね。";
-    
-        if ($action === 'approved' && $current_step < $max_step) {
+
+    // 申請書のフォーマット名を取得
+    $queryDocumentFormat = "
+        SELECT df.name 
+        FROM document_formats df 
+        JOIN documents d ON df.format_id = d.format_id 
+        WHERE d.document_id = $document_id
+    ";
+    $resultDocumentFormat = pg_query($conn, $queryDocumentFormat);
+    $documentFormatRow = pg_fetch_assoc($resultDocumentFormat);
+    $document_format_name = $documentFormatRow['name'];
+
+    $message_text = '';
+
+if ($action === 'approved') {
+    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を承認しました。よかったね。";
+    if ($current_step < $max_step) {
         // 次の承認者を取得
         $queryNextApprover = "
             SELECT ar.applicant_id, m.name
@@ -151,13 +164,16 @@ try {
         if ($nextApprover = pg_fetch_assoc($resultNextApprover)) {
             $next_approver_id = $nextApprover['applicant_id'];
             $next_approver_name = $nextApprover['name'];
-            $message_text .= " $next_approver_name さんは申請を確認してください。";
+            $message_text .= " *$next_approver_name* さんは申請を確認してください。";
         } else {
-            $message_text .= " 承認ルートが途中で変更されています。申請をやり直してください";
+            $message_text .= " 承認ルートが途中で変更されています。申請をやり直してください。";
         }
     } else {
         $message_text .= " これで完了です。";
     }
+} elseif ($action === 'rejected') {
+    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を却下しました。理由について私には判断できかねますので、直接お尋ねになってみてはいかがですか？";
+}
     
     $message = array('text' => $message_text);
     

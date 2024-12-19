@@ -105,7 +105,9 @@ function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
         JOIN group_members gm ON ar.group_id = gm.group_id
         JOIN documents d ON d.applicant_id = gm.applicant_id
         WHERE d.document_id = $1
+        AND ar.group_id = gm.group_id  -- 申請者のグループIDに基づいてフィルタリング
         AND ar.is_deleted = false
+        AND gm.is_deleted = false  -- 追加: 削除されていないグループメンバーのみを考慮
         ";
         $result_max_step = pg_query_params($conn, $query_max_step, [$documentId]);
         $max_step_row = pg_fetch_assoc($result_max_step);
@@ -119,6 +121,59 @@ function insertDocument($conn, $applicantId, $selectedFormatId, $items) {
         WHERE document_id = $2
         ";
         pg_query_params($conn, $query_update_max_step, [$max_step, $documentId]);
+
+        // 申請者の名前を取得
+        $queryApplicantName = "SELECT name FROM member WHERE mem_id = '$applicantId'";
+        $resultApplicantName = pg_query($conn, $queryApplicantName);
+        $applicantNameRow = pg_fetch_assoc($resultApplicantName);
+        $applicant_name = $applicantNameRow['name'];
+
+        // 申請書のフォーマット名を取得
+        $queryDocumentFormat = "
+            SELECT name 
+            FROM document_formats 
+            WHERE format_id = $selectedFormatId
+        ";
+        $resultDocumentFormat = pg_query($conn, $queryDocumentFormat);
+        $documentFormatRow = pg_fetch_assoc($resultDocumentFormat);
+        $document_format_name = $documentFormatRow['name'];
+
+        // 次の承認者を取得
+        $queryNextApprover = "
+            SELECT ar.applicant_id, m.name
+            FROM approval_routes ar
+            JOIN member m ON ar.applicant_id = m.mem_id
+            JOIN approval_status ast ON ar.approval_order = ast.step_number
+            JOIN group_members gm ON ar.group_id = gm.group_id
+            WHERE ast.document_id = $documentId
+            AND ast.status = 0
+            AND ar.is_deleted = false
+            AND gm.applicant_id = '$applicantId'  -- 申請者のグループに基づくフィルタリング
+            AND ar.approval_order = (SELECT current_step FROM documents WHERE document_id = $documentId)
+            LIMIT 1
+        ";
+        $resultNextApprover = pg_query($conn, $queryNextApprover);
+        if ($nextApprover = pg_fetch_assoc($resultNextApprover)) {
+            $next_approver_name = $nextApprover['name'];
+            $message_text = "$applicant_name さんが $document_format_name を作成しました。$next_approver_name さんは申請を確認してください。";
+        } else {
+            $message_text = "$applicant_name さんが $document_format_name を作成しましたが、承認者が見つかりません。";
+        }
+
+        // Slack通知の送信
+        $slack_webhook_url = 'https://hooks.slack.com/services/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';
+        $message = array('text' => $message_text);
+
+        $options = array(
+            'http' => array(
+                'method'  => 'POST',
+                'header'  => 'Content-Type: application/json',
+                'content' => json_encode($message),
+            ),
+        );
+
+        $context  = stream_context_create($options);
+        file_get_contents($slack_webhook_url, false, $context);
 
         return $documentId;
     } else {

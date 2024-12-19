@@ -216,6 +216,13 @@ HTML;
     pg_free_result($resultMembers);
 }
 
+// グループ削除のフォームを追加
+$ybase->ST_PRI .= <<<HTML
+        <form method="POST" action="group_members_action.php" class="mt-4">
+            <input type="hidden" name="group_id" value="$group_id">
+            <button type="submit" name="delete_group" class="btn btn-danger">グループを削除</button>
+        </form>
+HTML;
 
 $ybase->ST_PRI .= <<<HTML
         </div>
