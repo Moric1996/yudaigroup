@@ -187,32 +187,18 @@ $applicant_id = $ybase->my_employee_num;
 
 // [Previous query remains the same]
 $queryDocuments = "
-    WITH approver_groups AS (
-    SELECT DISTINCT ar.group_id, ar.approval_order
-    FROM approval_routes ar
-    WHERE ar.is_deleted = false
-),
-user_approval_order AS (
+    WITH user_approval_order AS (
     SELECT ar.approval_order
     FROM approval_routes ar
     WHERE ar.applicant_id = '$applicant_id'
     AND ar.is_deleted = false
     LIMIT 1
 ),
-pending_previous_approvals AS (
-    SELECT d.document_id
+document_groups AS (
+    SELECT d.document_id, gm.group_id
     FROM documents d
-    JOIN approval_status aps ON d.document_id = aps.document_id
-    JOIN approval_routes ar ON ar.group_id = (
-        SELECT group_id 
-        FROM group_members 
-        WHERE applicant_id = d.applicant_id 
-        AND is_deleted = false
-        LIMIT 1
-    )
-    WHERE ar.is_deleted = false
-    AND ar.approval_order < (SELECT approval_order FROM user_approval_order)
-    AND aps.status = 0
+    JOIN group_members gm ON d.applicant_id = gm.applicant_id
+    WHERE gm.is_deleted = false
 )
 SELECT DISTINCT 
     d.document_id,
@@ -224,28 +210,22 @@ SELECT DISTINCT
 FROM documents d
 JOIN member m ON d.applicant_id = m.mem_id
 JOIN document_formats f ON d.format_id = f.format_id
-JOIN approval_routes ar ON ar.group_id = (
-    SELECT group_id 
-    FROM group_members 
-    WHERE applicant_id = d.applicant_id 
-    AND is_deleted = false
-    LIMIT 1
-)
-JOIN approver_groups ag ON ag.group_id = ar.group_id
-LEFT JOIN approval_status aps ON d.document_id = aps.document_id 
-    AND aps.step_number = ag.approval_order
-WHERE d.is_deleted = false  -- ここに条件を追加
-    AND d.applicant_id != '$applicant_id'
+JOIN document_groups dg ON d.document_id = dg.document_id
+JOIN approval_routes ar ON ar.group_id = dg.group_id
+    AND ar.is_deleted = false
+JOIN approval_status aps ON d.document_id = aps.document_id 
+    AND aps.step_number = ar.approval_order
+WHERE d.is_deleted = false
     AND EXISTS (
         SELECT 1
-        FROM approval_routes ar
-        WHERE ar.group_id = ag.group_id
-            AND ar.approval_order = ag.approval_order
-            AND ar.applicant_id = '$applicant_id'
-            AND ar.is_deleted = false
+        FROM approval_routes ar2
+        WHERE ar2.applicant_id = '$applicant_id'
+        AND ar2.group_id = dg.group_id
+        AND ar2.approval_order = aps.step_number
+        AND ar2.is_deleted = false
     )
-    AND aps.step_number = (SELECT approval_order FROM user_approval_order)
 ORDER BY d.updated_at DESC;
+
 ";
 
 $resultDocuments = pg_query($conn, $queryDocuments);
@@ -287,8 +267,8 @@ if (!$resultDocuments) {
         $ybase->ST_PRI .= "<td>" . $updated_at->format('Y/m/d H:i') . "</td>";
         $ybase->ST_PRI .= "<td>
             <form action='approve.php?document_id={$document['document_id']}' method='post' class='d-inline'>
-                <button type='submit' name='action' value='approved' class='btn btn-success btn-sm mr-2'>承認</button>
-                <button type='submit' name='action' value='rejected' class='btn btn-danger btn-sm'>却下</button>
+                <button type='submit' name='action' value='approved' class='btn btn-success btn-sm mr-2' " . ($document['step_status'] != 0 ? 'disabled' : '') . ">承認</button>
+                <button type='submit' name='action' value='rejected' class='btn btn-danger btn-sm' " . ($document['step_status'] != 0 ? 'disabled' : '') . ">却下</button>
             </form>
         </td>";
         $ybase->ST_PRI .= "<td><a href='/yudaigroup/approval/document_detail.php?document_id={$document['document_id']}' class='btn btn-info btn-sm'>確認</a></td>";

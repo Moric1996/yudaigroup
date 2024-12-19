@@ -44,8 +44,7 @@ try {
     $queryAuthCheck = "
         SELECT ar.group_id
         FROM approval_routes ar
-        JOIN group_members gm ON ar.group_id = gm.group_id
-        WHERE gm.applicant_id = '$approver_id'
+        WHERE ar.applicant_id = '$approver_id'
         AND ar.approval_order = '$current_step'
         AND ar.is_deleted = false
     ";
@@ -119,7 +118,7 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
 
     // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
@@ -151,15 +150,16 @@ if ($action === 'approved') {
     if ($current_step < $max_step) {
         // 次の承認者を取得
         $queryNextApprover = "
-            SELECT ar.applicant_id, m.name
-            FROM approval_routes ar
-            JOIN member m ON ar.applicant_id = m.mem_id
-            JOIN approval_status ast ON ar.approval_order = ast.step_number
-            WHERE ast.document_id = $document_id
-            AND ast.status = 0
-            AND ar.is_deleted = false
-            LIMIT 1
-        ";
+        SELECT ar.applicant_id, m.name
+        FROM approval_routes ar
+        JOIN member m ON ar.applicant_id = m.mem_id
+        JOIN group_members gm ON ar.group_id = gm.group_id
+        WHERE ar.group_id = $group_id
+        AND ar.approval_order = $next_step
+        AND ar.is_deleted = false
+        AND gm.is_deleted = false
+        LIMIT 1
+    ";
         $resultNextApprover = pg_query($conn, $queryNextApprover);
         if ($nextApprover = pg_fetch_assoc($resultNextApprover)) {
             $next_approver_id = $nextApprover['applicant_id'];
