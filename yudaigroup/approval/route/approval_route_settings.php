@@ -238,7 +238,7 @@ $ybase->ST_PRI .= "</div></div>";
 pg_free_result($resultRoutes);
 }
 
-// Get all members for new approvers
+// データベースからメンバー情報を取得（PHP側）
 $queryAllMembers = "
 SELECT mem_id, name
 FROM member
@@ -248,41 +248,32 @@ $resultAllMembers = pg_query($conn, $queryAllMembers);
 
 $options = '';
 if ($resultAllMembers) {
-while ($row = pg_fetch_assoc($resultAllMembers)) {
-    $memberId = htmlspecialchars($row['mem_id'], ENT_QUOTES, 'UTF-8');
-    $memberName = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
-    $options .= "<option value=\"$memberId\">$memberName</option>";
-}
-pg_free_result($resultAllMembers);
+    while ($row = pg_fetch_assoc($resultAllMembers)) {
+        $memberId = htmlspecialchars($row['mem_id'], ENT_QUOTES, 'UTF-8');
+        $memberName = htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8');
+        $options .= "<option value=\"$memberId\">$memberName</option>";
+    }
+    pg_free_result($resultAllMembers);
 }
 
-
-    $ybase->ST_PRI .= <<<HTML
-        <div class="form-card animate__animated animate__fadeIn">
-        <h3 class="section-title mb-4">承認者を編集</h3>
-            <form method="POST" action="approval_route_action.php">
-                <input type="hidden" name="group_id" value="$group_id">
-                <div id="approvers-container">
-                <div class="form-group">
-                    <label for="approval_order_1">第1承認者</label>
-                    <div class="d-flex">
-                        <select name="approval_order[]" id="approval_order_1" class="form-control mr-2">
-                            <option value="">承認者を選択してください</option>
-                            <?php echo $options; ?>
-                        </select>
-                    </div>
-                </div>
-                </div>
-                <div class="mt-4">
-                    <button type="button" class="btn btn-secondary mr-2" onclick="addApprover()">
-                        <i class="fas fa-plus mr-2"></i>承認者を追加
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save mr-2"></i>登録
-                    </button>
-                </div>
-            </form>
-        </div>
+// 承認者編集フォームの基本構造のみを出力
+$ybase->ST_PRI .= <<<HTML
+    <div class="form-card animate__animated animate__fadeIn">
+    <h3 class="section-title mb-4">承認者を編集</h3>
+        <form method="POST" action="approval_route_action.php">
+            <input type="hidden" name="group_id" value="$group_id">
+            <div id="approvers-container">
+            </div>
+            <div class="mt-4">
+                <button type="button" class="btn btn-secondary mr-2" onclick="addApprover()">
+                    <i class="fas fa-plus mr-2"></i>承認者を追加
+                </button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i>登録
+                </button>
+            </div>
+        </form>
+    </div>
 HTML;
 }
 
@@ -313,9 +304,42 @@ $ybase->ST_PRI .= <<<HTML
 </div>
 
 <script>
-let approverCount = 1;
-const memberOptions = `${options}`;
+let approverCount = 0;
+const memberOptions = `$options`;
 
+// 承認者セレクトボックスの生成関数
+function createApproverSelect(number) {
+    const container = document.createElement('div');
+    container.className = 'form-group animate__animated animate__fadeIn';
+    container.innerHTML = `
+        <label for="approval_order_\${number}">第\${number}承認者</label>
+        <div class="d-flex">
+            <select name="approval_order[]" id="approval_order_\${number}" class="form-control mr-2">
+                <option value="">承認者を選択してください</option>
+                \${memberOptions}
+            </select>
+        </div>
+    `;
+    return container;
+}
+
+// 承認者追加
+function addApprover() {
+    approverCount++;
+    const container = document.getElementById("approvers-container");
+    const newApprover = createApproverSelect(approverCount);
+    container.appendChild(newApprover);
+    
+    const newSelect = newApprover.querySelector('select');
+    newSelect.addEventListener('change', updateApproverOptions);
+    updateApproverOptions();
+}
+
+// 初期設定
+document.addEventListener('DOMContentLoaded', () => {
+    // 最初の承認者を追加
+    addApprover();
+});
 // 全選択肢の初期データを保持
 const allApprovers = Array.from(new DOMParser().parseFromString(memberOptions, 'text/html')
     .querySelectorAll('option'))
@@ -354,44 +378,6 @@ function updateApproverOptions() {
         });
     });
 }
-
-// 承認者追加
-function addApprover() {
-    approverCount++;
-    const container = document.getElementById("approvers-container");
-    const newApprover = document.createElement("div");
-    newApprover.className = "form-group animate__animated animate__fadeIn";
-    newApprover.innerHTML = `
-        <label for="approval_order_\${approverCount}">第\${approverCount}承認者:</label>
-        <div class="d-flex">
-            <select name="approval_order[]" id="approval_order_\${approverCount}" class="form-control mr-2">
-                <option value="">承認者を選択してください</option>
-                \${memberOptions}
-            </select>
-        </div>
-    `;
-    container.appendChild(newApprover);
-    
-    // イベントリスナーを追加
-    const newSelect = newApprover.querySelector('select');
-    newSelect.addEventListener('change', updateApproverOptions);
-    
-    // 選択肢を更新
-    updateApproverOptions();
-}
-
-// // 承認者削除
-// function removeApprover(button) {
-//     const approverDiv = button.closest('.form-group');
-//     approverDiv.classList.remove('animate__fadeIn');
-//     approverDiv.classList.add('animate__fadeOut');
-    
-//     setTimeout(() => {
-//         approverDiv.remove();
-//         approverCount--;
-//         updateApproverOptions();
-//     }, 500);
-// }
 
 // 初期設定
 document.addEventListener('DOMContentLoaded', () => {
