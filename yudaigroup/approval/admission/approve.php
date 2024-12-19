@@ -119,7 +119,7 @@ try {
     pg_query($conn, $updateDocumentQuery);
 
     // Slack通知の送信
-    $slack_webhook_url = 'https://hooks.slack.com/services/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';
+    $slack_webhook_url = 'https://hooks.slack.com/services/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';
 
     // 承認者の名前を取得
     $queryApproverName = "SELECT name FROM member WHERE mem_id = '$approver_id'";
@@ -144,9 +144,11 @@ try {
     $documentFormatRow = pg_fetch_assoc($resultDocumentFormat);
     $document_format_name = $documentFormatRow['name'];
 
-    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を承認しました。よかったね。";
+    $message_text = '';
 
-    if ($action === 'approved' && $current_step < $max_step) {
+if ($action === 'approved') {
+    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を承認しました。よかったね。";
+    if ($current_step < $max_step) {
         // 次の承認者を取得
         $queryNextApprover = "
             SELECT ar.applicant_id, m.name
@@ -164,11 +166,14 @@ try {
             $next_approver_name = $nextApprover['name'];
             $message_text .= " *$next_approver_name* さんは申請を確認してください。";
         } else {
-            $message_text .= " 承認ルートが途中で変更されています。申請をやり直してください";
+            $message_text .= " 承認ルートが途中で変更されています。申請をやり直してください。";
         }
     } else {
         $message_text .= " これで完了です。";
     }
+} elseif ($action === 'rejected') {
+    $message_text = "$approver_name さんが $applicant_name さんの{$document_format_name}を却下しました。理由について私には判断できかねますので、直接お尋ねになってみてはいかがですか？";
+}
     
     $message = array('text' => $message_text);
     
